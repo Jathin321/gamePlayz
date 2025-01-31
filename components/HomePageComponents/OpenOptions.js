@@ -1,9 +1,20 @@
 'use client';
+
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export default function OpenOptions() {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: "/", label: "Home" },
+    { href: "/about", label: "About" },
+    { href: "/tournaments", label: "Tournaments" },
+    { href: "/spaces", label: "Spaces" },
+    { href: "/contact", label: "Contact" },
+  ];
 
   return (
     <>
@@ -39,44 +50,21 @@ export default function OpenOptions() {
         id="navbar-sticky"
       >
         <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-          <li>
-            <Link href="#">
-              <div
-                className="block py-2 px-3 text-white bg-[#A78BFA] rounded-sm md:bg-transparent md:text-[#A78BFA] md:p-0 md:dark:text-[#A78BFA]"
-                aria-current="page"
-              >
-                Home
-              </div>
-            </Link>
-          </li>
-          <li>
-            <Link href="#">
-              <div className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A78BFA] md:p-0 md:dark:hover:text-[#A78BFA] dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                About
-              </div>
-            </Link>
-          </li>
-          <li>
-            <Link href="#">
-              <div className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A78BFA] md:p-0 md:dark:hover:text-[#A78BFA] dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                Tournaments
-              </div>
-            </Link>
-          </li>
-          <li>
-            <Link href="#">
-              <div className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A78BFA] md:p-0 md:dark:hover:text-[#A78BFA] dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                Spaces
-              </div>
-            </Link>
-          </li>
-          <li>
-            <Link href="#">
-              <div className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A78BFA] md:p-0 md:dark:hover:text-[#A78BFA] dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700">
-                Contact
-              </div>
-            </Link>
-          </li>
+          {navItems.map((item) => (
+            <li key={item.href}>
+              <Link href={item.href}>
+                <div
+                  className={`block py-2 px-3 rounded-sm md:p-0 ${
+                    pathname === item.href
+                      ? "bg-[#A78BFA] text-white md:bg-transparent md:text-[#A78BFA]"
+                      : "text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A78BFA] dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                  }`}
+                >
+                  {item.label}
+                </div>
+              </Link>
+            </li>
+          ))}
         </ul>
       </div>
     </>

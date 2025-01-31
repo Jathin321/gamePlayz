@@ -1,28 +1,43 @@
+import Link from "next/link";
+import { Calendar, DollarSign, Users2 } from "lucide-react";
+
 export default function TournamentCard() {
   return (
-    <div>
-      {/* <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="p-4 bg-gray-800/50  backdrop-blur-sm rounded-xl shadow-md">
+      {/* Top Section with Game Icon */}
+      {/* <div className="flex items-center space-x-3">
+        <div className="w-8 h-8 rounded-full overflow-hidden">
+          <img
+            src="https://image1.challengermode.com/907dbadf-6448-47b4-370d-08d9251960c2_32_32"
+            alt="Pokémon UNITE icon"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <h4 className="text-white font-medium">Pokémon UNITE</h4>
       </div> */}
 
-      <div className="bg-gray-800/50 w-80 m-3 rounded-2xl overflow-hidden backdrop-blur-sm hover:transform hover:scale-105 transition duration-300">
-        <img
-          src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80"
-          alt="Valorant Tournament"
-          className="w-full h-48 object-cover"
-        />
-        <div className="p-6">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-xl font-bold text-white">
-              Valorant Champions Tour
-            </h3>
-            <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">
-              Open
-            </span>
-            {/* <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm">Filling Fast</span> */}
-            {/* <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-sm">Last Call</span> */}
-          </div>
+      {/* Thumbnail Section */}
+      <Link href="/tournaments/some-tournament">
+        <div className="mt-4 relative aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
+          <img
+            src="https://image1.challengermode.com/51206c37-089e-44ff-4a6a-08dd394ae91b_1280_720"
+            alt="Tournament Thumbnail"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black bg-opacity-25"></div>
+        </div>
+      </Link>
 
-          {/* <div className="space-y-3">
+      {/* Tournament Details */}
+      <div className="mt-4">
+        {/* Title */}
+        <Link href="/tournaments/some-tournament">
+          <h5 className="text-white font-semibold text-lg hover:underline">
+            Winter battle Season 12
+          </h5>
+        </Link>
+        
+        <div className="space-y-3">
             <div className="flex items-center text-gray-300">
               <Calendar className="w-4 h-4 mr-2" />
               <span>March 15, 2024 - 18:00 UTC</span>
@@ -35,13 +50,8 @@ export default function TournamentCard() {
               <DollarSign className="w-4 h-4 mr-2" />
               <span>$25,000 Prize Pool</span>
             </div>
-          </div> */}
+          </div>
 
-          <button className="w-full mt-6 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition flex items-center justify-center space-x-2">
-            <span>Register Now</span>
-            {/* <ArrowRight className="w-4 h-4" /> */}
-          </button>
-        </div>
       </div>
     </div>
   );
