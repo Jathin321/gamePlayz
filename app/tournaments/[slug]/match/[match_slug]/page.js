@@ -21,7 +21,7 @@ import Idp from "@/components/SharedComponents/idp";
 import Matches from "@/components/TournamentComponents/matches";
 import LiveChat from "@/components/SharedComponents/liveChat";
 
-const TournamentDetails = () => {
+const MatchDetails = () => {
   const scrollContainerRef = useRef(null);
   const router = useRouter();
 
@@ -32,13 +32,10 @@ const TournamentDetails = () => {
     }
   };
 
-  const [activeTab, setActiveTab] = useState("Overview");
+  const [activeTab, setActiveTab] = useState("Teams");
   const navigationBar = [
-    "Overview",
     "Teams",
-    "Matches",
-    "Live Chat",
-    "Announcements",
+    "Points Table",
     "IDP",
   ];
 
@@ -73,16 +70,10 @@ const TournamentDetails = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "Overview":
-        return <TournamentDetailsComponent />;
+      case "Points Table":
+        return <PointsTable />;
       case "Teams":
         return <RegisteredTeams />;
-      case "Matches":
-        return <Matches />;
-      case "Live Chat":
-        return <LiveChat />;
-      case "Announcements":
-        return <Announcements />;
       case "IDP":
         return <Idp />;
       default:
@@ -100,50 +91,11 @@ const TournamentDetails = () => {
 
   return (
     <div className="bg-gray-900">
-      {/* Banner */}
-      <div
-        className={`${classes.banner} lg:h-[250px] md:h-[200px] h-[150px] relative w-full mt-18`}
-      >
-        {/* Back Button */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="30"
-          height="30"
-          fill="currentColor"
-          className="absolute top-2 left-2 text-white cursor-pointer"
-          viewBox="0 0 16 16"
-          onClick={handleBack}
-        >
-          <path
-            fillRule="evenodd"
-            d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
-          />
-        </svg>
-
-        {/* Share Icon */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
-          fill="currentColor"
-          className="absolute top-3 right-2 text-white cursor-pointer"
-          viewBox="0 0 16 16"
-        >
-          <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
-        </svg>
-      </div>
 
       {/* Details */}
-      <div className="relative hidden px-20 md:block lg:block">
-        <div className="flex flex-col md:flex-row items-center text-center md:text-left -translate-y-[45%]">
+      <div className="relative hidden px-20 py-12 mx-auto md:block lg:block">
+        <div className="flex flex-col justify-center md:flex-row items-center text-center md:text-left">
           {/* Profile Picture */}
-          <div className="w-full md:w-1/4 flex justify-center mb-3 md:mb-0">
-            <img
-              src="https://th.bing.com/th/id/OIP.ZugpBU6RwS8ftzBQyaXuegHaJQ?w=159&h=199&c=7&r=0&o=5&dpr=1.3&pid=1.7"
-              alt="Profile Picture"
-              className="w-64 h-64 rounded-full object-cover"
-            />
-          </div>
 
           {/* Tournament Details */}
           <div className="w-full md:w-2/4 md:mb-0 text-white">
@@ -153,19 +105,16 @@ const TournamentDetails = () => {
               {FormatTime(tourney_data.regStart)} -{" "}
               {FormatTime(tourney_data.regEnd)}
             </p>
-            <button className="bg-[#9875ff] text-white rounded-full px-4 py-2 mt-2">
-              {tourney_data.status}
-            </button>
+            <p>
+              Wed, 10th Dec 2024 - 6:00 PM
+            </p>
           </div>
 
           {/* Join Button */}
           <div className="w-full md:w-1/4 flex justify-center">
-            <Link
-              href="some-tournament/register"
-              className="w-full text-center md:w-3/4 bg-[#9875ff] text-white rounded-full px-4 py-2"
-            >
-              Join Tournament
-            </Link>
+            <p href="some-tournament/register" className="w-full text-center md:w-3/4 bg-[#9875ff] text-white rounded-full px-4 py-2">
+              Status
+            </p>
           </div>
         </div>
       </div>
@@ -174,17 +123,9 @@ const TournamentDetails = () => {
       <div className="block md:hidden lg:hidden">
         {/* Profile Section */}
         <div className="flex items-center">
-          {/* Profile Picture */}
-          <div className="w-1/4">
-            <img
-              src="https://th.bing.com/th/id/OIP.ZugpBU6RwS8ftzBQyaXuegHaJQ?w=159&h=199&c=7&r=0&o=5&dpr=1.3&pid=1.7"
-              alt="Profile Picture"
-              className="rounded-full w-20 h-20 object-cover"
-            />
-          </div>
 
           {/* Tournament Details */}
-          <div className="w-3/4 text-white">
+          <div className="w-3/4 mx-auto py-8 text-white">
             <p className="mb-1">Organizer Name</p>
             <h2 className="text-lg font-semibold mb-1">
               Winter Battle Season 1
@@ -195,18 +136,11 @@ const TournamentDetails = () => {
             </div>
           </div>
         </div>
-
-        {/* Join Tournament Button */}
-        <Link href="some-tournament/register" className="text-center mt-3">
-          <button className="bg-[#9875ff] justify-center text-center text-white rounded-full w-[95%] py-3">
-            Join
-          </button>
-        </Link>
       </div>
 
       {/* Horizontal Scrollable Navigation */}
       <div
-        className={`${classes.customActiveButton} hidden md:block lg:block px-32 bg-transparent mt-[-8%]`}
+        className={`${classes.customActiveButton} hidden md:block lg:block bg-transparent`}
       >
         <div className="container mx-auto">
           <div className="flex gap-20 py-3">
@@ -264,4 +198,4 @@ const TournamentDetails = () => {
   );
 };
 
-export default TournamentDetails;
+export default MatchDetails;

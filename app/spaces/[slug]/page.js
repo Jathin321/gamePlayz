@@ -1,27 +1,16 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import classes from "./style.module.css";
-import {
-  Gamepad,
-  Gamepad2,
-  Calendar,
-  Users,
-  Ticket,
-  Wallet,
-  CalendarClock,
-} from "lucide-react";
-import TournamentDetailsComponent from "@/components/TournamentComponents/tournamentDetails";
-import RegisteredTeams from "@/components/SharedComponents/registeredTeams";
-import PointsTable from "@/components/SharedComponents/pointsTable";
+import { Gamepad, Gamepad2, Calendar, Users, Ticket, Wallet, CalendarClock } from "lucide-react";
 import Announcements from "@/components/SharedComponents/announcements";
 import Idp from "@/components/SharedComponents/idp";
-import Matches from "@/components/TournamentComponents/matches";
-import LiveChat from "@/components/SharedComponents/liveChat";
+import Home from "@/components/spaceComponents/home";
+import Tournaments from "@/components/spaceComponents/tournaments";
+import Scrims from "@/components/spaceComponents/scrims";
 
-const TournamentDetails = () => {
+const ScrimDetails = () => {
   const scrollContainerRef = useRef(null);
   const router = useRouter();
 
@@ -32,19 +21,18 @@ const TournamentDetails = () => {
     }
   };
 
-  const [activeTab, setActiveTab] = useState("Overview");
+  const [activeTab, setActiveTab] = useState("Home");
   const navigationBar = [
-    "Overview",
-    "Teams",
-    "Matches",
-    "Live Chat",
+    "Home",
+    "Tournaments",
+    "Scrims",
     "Announcements",
-    "IDP",
+    "Live Chat",
   ];
 
   const tourney_data = {
     tournId: 1,
-    tournName: "Winter Battle Season 1",
+    tournName: "Space Name",
     tournPp: "1000",
     regStart: "2024-12-01T10:00:00.000Z",
     regEnd: "2024-12-05T18:00:00.000Z",
@@ -73,18 +61,16 @@ const TournamentDetails = () => {
 
   const renderContent = () => {
     switch (activeTab) {
-      case "Overview":
-        return <TournamentDetailsComponent />;
-      case "Teams":
-        return <RegisteredTeams />;
-      case "Matches":
-        return <Matches />;
-      case "Live Chat":
-        return <LiveChat />;
+      case "Home":
+        return <Home />;
+      case "Tournaments":
+        return <Tournaments/>;
+      case "Scrims":
+        return <Scrims />;
       case "Announcements":
-        return <Announcements />;
+        return <Announcements/>;
       case "IDP":
-        return <Idp />;
+        return <Idp/>;
       default:
         return <p className="text-white">Overview Content</p>;
     }
@@ -99,7 +85,7 @@ const TournamentDetails = () => {
   };
 
   return (
-    <div className="bg-gray-900">
+    <div className="bg-gray-900 mt-16">
       {/* Banner */}
       <div
         className={`${classes.banner} lg:h-[250px] md:h-[200px] h-[150px] relative w-full mt-18`}
@@ -147,25 +133,15 @@ const TournamentDetails = () => {
 
           {/* Tournament Details */}
           <div className="w-full md:w-2/4 md:mb-0 text-white">
-            <p className="text-lg md:mt-5 py-2">{tourney_data.orgBy}</p>
             <h2 className="text-4xl">{tourney_data.tournName}</h2>
-            <p className="py-2">
-              {FormatTime(tourney_data.regStart)} -{" "}
-              {FormatTime(tourney_data.regEnd)}
-            </p>
-            <button className="bg-[#9875ff] text-white rounded-full px-4 py-2 mt-2">
-              {tourney_data.status}
-            </button>
+            <h1 className="mt-3">225K members</h1>
           </div>
 
           {/* Join Button */}
           <div className="w-full md:w-1/4 flex justify-center">
-            <Link
-              href="some-tournament/register"
-              className="w-full text-center md:w-3/4 bg-[#9875ff] text-white rounded-full px-4 py-2"
-            >
-              Join Tournament
-            </Link>
+            <button className="w-full md:w-3/4 bg-[#9875ff] text-white rounded-full px-4 py-2">
+              Join Space
+            </button>
           </div>
         </div>
       </div>
@@ -197,11 +173,11 @@ const TournamentDetails = () => {
         </div>
 
         {/* Join Tournament Button */}
-        <Link href="some-tournament/register" className="text-center mt-3">
-          <button className="bg-[#9875ff] justify-center text-center text-white rounded-full w-[95%] py-3">
+        <div className="text-center mt-3">
+          <button className="bg-[#9875ff] text-white rounded-full w-[95%] py-3">
             Join
           </button>
-        </Link>
+        </div>
       </div>
 
       {/* Horizontal Scrollable Navigation */}
@@ -259,9 +235,9 @@ const TournamentDetails = () => {
         </div>
       </div>
 
-      <div className="pb-12">{renderContent()}</div>
+      {renderContent()}
     </div>
   );
 };
 
-export default TournamentDetails;
+export default ScrimDetails;

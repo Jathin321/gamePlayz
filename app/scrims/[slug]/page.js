@@ -1,27 +1,18 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import classes from "./style.module.css";
-import {
-  Gamepad,
-  Gamepad2,
-  Calendar,
-  Users,
-  Ticket,
-  Wallet,
-  CalendarClock,
-} from "lucide-react";
-import TournamentDetailsComponent from "@/components/TournamentComponents/tournamentDetails";
+import { Gamepad, Gamepad2, Calendar, Users, Ticket, Wallet, CalendarClock } from "lucide-react";
 import RegisteredTeams from "@/components/SharedComponents/registeredTeams";
 import PointsTable from "@/components/SharedComponents/pointsTable";
 import Announcements from "@/components/SharedComponents/announcements";
 import Idp from "@/components/SharedComponents/idp";
-import Matches from "@/components/TournamentComponents/matches";
+import ScrimDetailsComponent from "@/components/ScrimComponents/scrimDetails";
 import LiveChat from "@/components/SharedComponents/liveChat";
 
-const TournamentDetails = () => {
+const ScrimDetails = () => {
   const scrollContainerRef = useRef(null);
   const router = useRouter();
 
@@ -36,7 +27,7 @@ const TournamentDetails = () => {
   const navigationBar = [
     "Overview",
     "Teams",
-    "Matches",
+    "PointsTable",
     "Live Chat",
     "Announcements",
     "IDP",
@@ -74,17 +65,17 @@ const TournamentDetails = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "Overview":
-        return <TournamentDetailsComponent />;
+        return <ScrimDetailsComponent />;
+      case "PointsTable":
+        return <PointsTable/>;
       case "Teams":
         return <RegisteredTeams />;
-      case "Matches":
-        return <Matches />;
       case "Live Chat":
         return <LiveChat />;
       case "Announcements":
-        return <Announcements />;
+        return <Announcements/>;
       case "IDP":
-        return <Idp />;
+        return <Idp/>;
       default:
         return <p className="text-white">Overview Content</p>;
     }
@@ -160,11 +151,8 @@ const TournamentDetails = () => {
 
           {/* Join Button */}
           <div className="w-full md:w-1/4 flex justify-center">
-            <Link
-              href="some-tournament/register"
-              className="w-full text-center md:w-3/4 bg-[#9875ff] text-white rounded-full px-4 py-2"
-            >
-              Join Tournament
+            <Link href="some-scrim/register" className="text-center w-full md:w-3/4 bg-[#9875ff] text-white rounded-full px-4 py-2">
+              Join Scrim
             </Link>
           </div>
         </div>
@@ -197,11 +185,11 @@ const TournamentDetails = () => {
         </div>
 
         {/* Join Tournament Button */}
-        <Link href="some-tournament/register" className="text-center mt-3">
-          <button className="bg-[#9875ff] justify-center text-center text-white rounded-full w-[95%] py-3">
+        <div className="text-center mt-3">
+          <Link href="some-scrim/register" className="bg-[#9875ff] text-white rounded-full w-[95%] py-3">
             Join
-          </button>
-        </Link>
+          </Link>
+        </div>
       </div>
 
       {/* Horizontal Scrollable Navigation */}
@@ -259,9 +247,9 @@ const TournamentDetails = () => {
         </div>
       </div>
 
-      <div className="pb-12">{renderContent()}</div>
+      {renderContent()}
     </div>
   );
 };
 
-export default TournamentDetails;
+export default ScrimDetails;

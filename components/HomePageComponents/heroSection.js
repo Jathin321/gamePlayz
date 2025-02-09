@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function HeroSection() {
   return (
     <div className="text-center lg:mt-64 md:mt-64 mt-32">
@@ -20,14 +22,14 @@ export default function HeroSection() {
       </p>
 
       <div className="flex flex-col md:flex-row justify-center gap-6">
-        <button className="flex items-center justify-center space-x-2 bg-purple-600 text-white px-8 py-4 rounded-full hover:bg-purple-700 transition transform hover:scale-105">
+        <Link href="/tournaments" className="flex items-center justify-center space-x-2 bg-purple-600 text-white px-8 py-4 rounded-full hover:bg-purple-700 transition transform hover:scale-105">
           {/* <GamepadIcon className="w-5 h-5" /> */}
           <span>Join Tournament</span>
-        </button>
-        <button className="flex items-center justify-center space-x-2 border border-purple-500 text-white px-8 py-4 rounded-full hover:bg-purple-500/10 transition transform hover:scale-105">
+        </Link>
+        <Link href="/spaces" className="flex items-center justify-center space-x-2 border border-purple-500 text-white px-8 py-4 rounded-full hover:bg-purple-500/10 transition transform hover:scale-105">
           {/* <Users className="w-5 h-5" /> */}
-          <span>Create Team</span>
-        </button>
+          <span>Host Tournament</span>
+        </Link>
       </div>
     </div>
   );

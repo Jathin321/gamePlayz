@@ -10,7 +10,7 @@ import {
   ArrowRight,
   TrendingUp,
 } from "lucide-react";
-import TournamentCard from "@/components/SharedComponents/tournamentCard";
+import TournamentCard from "@/components/TournamentComponents/tournamentCard";
 import SpaceCard from "@/components/HomePageComponents/homepageSpaceCard";
 
 function Tournaments() {

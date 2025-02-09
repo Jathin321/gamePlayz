@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Header from "@/components/HomePageComponents/header";
 import HeroSection from "@/components/HomePageComponents/heroSection";
-import TournamentCard from "@/components/HomePageComponents/homePageTournamentCard";
+import TournamentCard from "@/components/TournamentComponents/tournamentCard";
 import SpaceCard from "@/components/HomePageComponents/homepageSpaceCard";
 import Link from "next/link";
 
@@ -27,7 +27,7 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        <div className="lg:p-12 p-3 flex overflow-x-auto w-screen scrollbar-hidden">
+        <div className="lg:p-12 p-3 flex overflow-x-auto w-screen scrollbar-hidden gap-5">
           <TournamentCard />
           <TournamentCard />
           <TournamentCard />

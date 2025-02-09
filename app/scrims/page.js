@@ -10,9 +10,9 @@ import {
   ArrowRight,
   TrendingUp,
 } from "lucide-react";
-import TournamentCard from "@/components/TournamentComponents/tournamentCard";
+import ScrimsCard from "@/components/ScrimComponents/scrimsCard";
 
-function Tournaments() {
+function Scrims() {
   const [activeTab, setActiveTab] = useState("live");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -30,7 +30,7 @@ function Tournaments() {
             <input
               type="text"
               className="block backdrop-blur-md w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Search tournaments by name, game, or organizer..."
+              placeholder="Search Scrims by name, game, or organizer..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -223,19 +223,19 @@ function Tournaments() {
             </div>
           </div> */}
 
-          <TournamentCard />
-          <TournamentCard />
-          <TournamentCard />
-          <TournamentCard />
+          <ScrimsCard />
+          <ScrimsCard />
+          <ScrimsCard />
+          <ScrimsCard />
 
-          <TournamentCard />
-          <TournamentCard />
-          <TournamentCard />
-          <TournamentCard />
+          <ScrimsCard />
+          <ScrimsCard />
+          <ScrimsCard />
+          <ScrimsCard />
         </div>
       </div>
     </div>
   );
 }
 
-export default Tournaments;
+export default Scrims;

@@ -1,4 +1,5 @@
 import { Star, Users2, Globe, Youtube, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 function SpaceCard() {
   return (
@@ -15,19 +16,10 @@ function SpaceCard() {
               <h3 className="text-xl font-bold text-white">
                 Valorant Champions Tour
               </h3>
-              <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">
-                Open
-              </span>
-              {/* <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm">Filling Fast</span> */}
-              {/* <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-sm">Last Call</span> */}
             </div>
             <div className="">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center text-yellow-400">
-                    <Star className="w-5 h-5 mr-1" />
-                    <span>4.9</span>
-                  </div>
                   <div className="flex items-center text-gray-300">
                     <Users2 className="w-5 h-5 mr-1" />
                     <span>250K</span>
@@ -55,7 +47,7 @@ function SpaceCard() {
               </div>
 
               <button className="w-full mt-6 bg-purple-600 text-white px-4 py-3 rounded-lg hover:bg-purple-700 transition flex items-center justify-center space-x-2">
-                <span>Join Space</span>
+                <Link href="spaces/some-component">Join Space</Link>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>

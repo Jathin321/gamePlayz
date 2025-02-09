@@ -3,7 +3,7 @@ import { Calendar, DollarSign, Users2 } from "lucide-react";
 
 export default function TournamentCard() {
   return (
-    <div className="p-4 bg-gray-800/50  backdrop-blur-sm rounded-xl shadow-md">
+    <div className="p-4 bg-gray-800/50 backdrop-blur-sm rounded-xl shadow-md flex-none">
       {/* Top Section with Game Icon */}
       {/* <div className="flex items-center space-x-3">
         <div className="w-8 h-8 rounded-full overflow-hidden">
@@ -22,7 +22,7 @@ export default function TournamentCard() {
           <img
             src="https://image1.challengermode.com/51206c37-089e-44ff-4a6a-08dd394ae91b_1280_720"
             alt="Tournament Thumbnail"
-            className="w-full h-full object-cover"
+            className="object-cover w-full h-[180px]"
           />
           <div className="absolute inset-0 bg-black bg-opacity-25"></div>
         </div>
@@ -36,22 +36,21 @@ export default function TournamentCard() {
             Winter battle Season 12
           </h5>
         </Link>
-        
-        <div className="space-y-3">
-            <div className="flex items-center text-gray-300">
-              <Calendar className="w-4 h-4 mr-2" />
-              <span>March 15, 2024 - 18:00 UTC</span>
-            </div>
-            <div className="flex items-center text-gray-300">
-              <Users2 className="w-4 h-4 mr-2" />
-              <span>32 Teams (16 spots left)</span>
-            </div>
-            <div className="flex items-center text-gray-300">
-              <DollarSign className="w-4 h-4 mr-2" />
-              <span>$25,000 Prize Pool</span>
-            </div>
-          </div>
 
+        <div className="space-y-3">
+          <div className="flex items-center text-gray-300">
+            <Calendar className="w-4 h-4 mr-2" />
+            <span>March 15, 2024 - 18:00 UTC</span>
+          </div>
+          <div className="flex items-center text-gray-300">
+            <Users2 className="w-4 h-4 mr-2" />
+            <span>32 Teams (16 spots left)</span>
+          </div>
+          <div className="flex items-center text-gray-300">
+            <DollarSign className="w-4 h-4 mr-2" />
+            <span>$25,000 Prize Pool</span>
+          </div>
+        </div>
       </div>
     </div>
   );

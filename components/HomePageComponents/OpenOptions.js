@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Menu } from "lucide-react";
 
 export default function OpenOptions() {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,10 +11,19 @@ export default function OpenOptions() {
 
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
     { href: "/tournaments", label: "Tournaments" },
+    { href: "/scrims", label: "Scrims" },
     { href: "/spaces", label: "Spaces" },
-    { href: "/contact", label: "Contact" },
+    { href: "/teams", label: "Teams" },
+    { href: "/about", label: "About" }
+  ];
+
+  const userItems = [
+    { href: "/my-tournaments", label: "My Tournaments" },
+    { href: "/my-scrims", label: "My Scrims" },
+    { href: "/my-spaces", label: "My Spaces" },
+    { href: "/my-teams", label: "My Teams" },
+    { href: "/profile/123", label: "Profile" },
   ];
 
   return (
@@ -26,23 +36,9 @@ export default function OpenOptions() {
         onClick={() => setIsOpen(!isOpen)}
       >
         <span className="sr-only">Open main menu</span>
-        <svg
-          className="w-5 h-5"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 17 14"
-          aria-hidden="true"
-        >
-          <path
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M1 1h15M1 7h15M1 13h15"
-          />
-        </svg>
+        <Menu />
       </button>
-      
+
       <div
         className={`items-center justify-between w-full md:flex md:w-auto md:order-1 ${
           isOpen ? "block" : "hidden"
@@ -50,7 +46,30 @@ export default function OpenOptions() {
         id="navbar-sticky"
       >
         <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-          {navItems.map((item) => (
+          {navItems.map((item) => {
+            let className = "block py-2 px-3 rounded-lg md:p-0 ";
+            if (
+              pathname === item.href ||
+              (item.href !== "/" && pathname.startsWith(item.href))
+            ) {
+              className +=
+                "bg-[#A78BFA] text-white md:bg-transparent md:text-[#A78BFA]";
+            } else {
+              className +=
+                "text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A78BFA] dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent";
+            }
+            return (
+              <li key={item.href}>
+                <Link href={item.href}>
+                  <div className={className}>{item.label}</div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        <ul className="lg:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+          {userItems.map((item) => (
             <li key={item.href}>
               <Link href={item.href}>
                 <div
@@ -65,6 +84,15 @@ export default function OpenOptions() {
               </Link>
             </li>
           ))}
+        </ul>
+        <ul className="lg:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+          <Link
+            href="/login"
+            className="text-white hover:bg-[#A78BFA] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-purple-900 dark:hover:bg-[#A78BFA]-700 dark:focus:ring-black"
+          >
+            {" "}
+            Log In{" "}
+          </Link>{" "}
         </ul>
       </div>
     </>

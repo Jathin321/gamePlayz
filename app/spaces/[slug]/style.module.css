@@ -54,6 +54,8 @@
 /* Styling for active button */
 .customActiveButton {
     position: relative;
+    color: white;
+    /* Red color for active button text */
 }
 
 .customActiveButton::after {
