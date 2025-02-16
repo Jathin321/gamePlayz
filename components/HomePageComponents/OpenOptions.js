@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
+import NavItems2 from "./navItems";
 
 export default function OpenOptions() {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,11 +19,20 @@ export default function OpenOptions() {
     { href: "/about", label: "About" }
   ];
 
+  const navItems2 = [
+    { href: "/", label: "Home" },
+    { label: "Play", sub: [{href: "/tournaments", label: "Tournaments"}, {href: "/scrims", label: "Scrims"}] },
+    { href: "/spaces", label: "Spaces" },
+    { label: "Find", sub: [{href: "/teams", label: "Find Team"}, {href: "/players", label: "Find Players"}] },
+    { href: "/about", label: "About" }
+  ];
+
   const userItems = [
-    { href: "/my-tournaments", label: "My Tournaments" },
-    { href: "/my-scrims", label: "My Scrims" },
-    { href: "/my-spaces", label: "My Spaces" },
-    { href: "/my-teams", label: "My Teams" },
+    { href: "/myTournaments", label: "My Tournaments" },
+    { href: "/myScrims", label: "My Scrims" },
+    { href: "/mySpaces", label: "My Spaces" },
+    { href: "/myTeams", label: "My Teams" },
+    { href: "/myFriends", label: "My Friends" },
     { href: "/profile/123", label: "Profile" },
   ];
 
@@ -30,7 +40,7 @@ export default function OpenOptions() {
     <>
       <button
         type="button"
-        className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+        className="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
         aria-controls="navbar-sticky"
         aria-expanded={isOpen}
         onClick={() => setIsOpen(!isOpen)}
@@ -45,8 +55,8 @@ export default function OpenOptions() {
         }`}
         id="navbar-sticky"
       >
-        <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-          {navItems.map((item) => {
+        {/* <ul className="lg:hidden md:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+        {navItems.map((item) => {
             let className = "block py-2 px-3 rounded-lg md:p-0 ";
             if (
               pathname === item.href ||
@@ -66,7 +76,8 @@ export default function OpenOptions() {
               </li>
             );
           })}
-        </ul>
+        </ul> */}
+        <NavItems2/>
 
         <ul className="lg:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
           {userItems.map((item) => (

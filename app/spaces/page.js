@@ -30,7 +30,7 @@ function Tournaments() {
             <input
               type="text"
               className="mt-6 block backdrop-blur-md w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Search tournaments by name, game, or organizer..."
+              placeholder="Search Spaces by name, game, or organizer..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
