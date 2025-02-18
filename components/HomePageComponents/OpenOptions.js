@@ -5,10 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import NavItems2 from "./navItems";
+import { useAuth } from "@/context/authContext";
 
 export default function OpenOptions() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const {user, logout} = useAuth();
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -16,15 +18,27 @@ export default function OpenOptions() {
     { href: "/scrims", label: "Scrims" },
     { href: "/spaces", label: "Spaces" },
     { href: "/teams", label: "Teams" },
-    { href: "/about", label: "About" }
+    { href: "/about", label: "About" },
   ];
 
   const navItems2 = [
     { href: "/", label: "Home" },
-    { label: "Play", sub: [{href: "/tournaments", label: "Tournaments"}, {href: "/scrims", label: "Scrims"}] },
+    {
+      label: "Play",
+      sub: [
+        { href: "/tournaments", label: "Tournaments" },
+        { href: "/scrims", label: "Scrims" },
+      ],
+    },
     { href: "/spaces", label: "Spaces" },
-    { label: "Find", sub: [{href: "/teams", label: "Find Team"}, {href: "/players", label: "Find Players"}] },
-    { href: "/about", label: "About" }
+    {
+      label: "Find",
+      sub: [
+        { href: "/teams", label: "Find Team" },
+        { href: "/players", label: "Find Players" },
+      ],
+    },
+    { href: "/about", label: "About" },
   ];
 
   const userItems = [
@@ -77,34 +91,39 @@ export default function OpenOptions() {
             );
           })}
         </ul> */}
-        <NavItems2/>
+        <NavItems2 />
 
-        <ul className="lg:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-          {userItems.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href}>
-                <div
-                  className={`block py-2 px-3 rounded-sm md:p-0 ${
-                    pathname === item.href
-                      ? "bg-[#A78BFA] text-white md:bg-transparent md:text-[#A78BFA]"
-                      : "text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A78BFA] dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
-                  }`}
-                >
-                  {item.label}
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <ul className="lg:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-          <Link
-            href="/login"
-            className="text-white hover:bg-[#A78BFA] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-purple-900 dark:hover:bg-[#A78BFA]-700 dark:focus:ring-black"
-          >
-            {" "}
-            Log In{" "}
-          </Link>{" "}
-        </ul>
+        {user ? (
+          <ul className="lg:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            {userItems.map((item) => (
+              <li key={item.href}>
+                <Link href={item.href}>
+                  <div
+                    className={`block py-2 px-3 rounded-sm md:p-0 ${
+                      pathname === item.href
+                        ? "bg-[#A78BFA] text-white md:bg-transparent md:text-[#A78BFA]"
+                        : "text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A78BFA] dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
+                    }`}
+                  >
+                    {item.label}
+                  </div>
+                </Link>
+              </li>
+            ))}
+            <button onClick={logout} className="p-3 bg-violet-700 rounded-lg">
+              Log Out
+            </button>
+          </ul>
+        ) : (
+          <ul className="lg:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <Link
+              href="/login"
+              className="text-white hover:bg-[#A78BFA] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-purple-900 dark:hover:bg-[#A78BFA]-700 dark:focus:ring-black"
+            >
+              Log In
+            </Link>
+          </ul>
+        )}
       </div>
     </>
   );

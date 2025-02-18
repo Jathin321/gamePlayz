@@ -3,6 +3,7 @@
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useAuth } from '@/context/authContext';
 
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +11,8 @@ const UserMenu = () => {
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+
+  const {user, logout} = useAuth()
 
   return (
     // Desktop Profile Icons 
@@ -112,15 +115,15 @@ const UserMenu = () => {
             Settings
           </Link>
 
-          <Link
-            href=""
+          <button
             className="block px-4 py-2 text-sm text-gray-300"
             role="menuitem"
             tabIndex="-1"
             id="user-menu-item-2"
+            onClick={logout}
           >
             Sign out
-          </Link>
+          </button>
         </div>
       )}
     </div>

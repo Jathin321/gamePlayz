@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid()) // Assuming you want a cuid for id
+  slug        String   @unique
+  fullname    String
+  username    String   @unique
+  email       String   @unique
+  password    String
+  phone       String?  // Phone number can be optional
+  dateOfBirth DateTime? // Date of birth can be optional
+  profilePic  String?  // Profile picture can be optional
+  bio         String?  // Bio can be optional
+  location    String?  // Location can be optional
+  motherTongue String?  // Mother tongue can be optional
+  mostActive  MostActive? // Using an enum
+  gender      Gender?    // Using an enum
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug]) // Indexing for slug
+  @@index([username]) // Indexing for username
+  @@index([email])   // Indexing for email
+}
+
+enum MostActive {
+  morning
+  evening
+  night
+}
+
+enum Gender {
+  Male
+  Female
+  Other
+}

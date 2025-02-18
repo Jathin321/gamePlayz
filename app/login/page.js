@@ -1,24 +1,75 @@
+'use client';
+import { useState } from 'react';
+import { supabase } from '@/util/supabase';
 import Link from 'next/link';
 import classes from './style.module.css'
+import { redirect } from 'next/navigation';
+
 const Login = () => {
+  const [email, setEmail] = useState("")
+  const [password, setpassword] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    
+    // Validation
+    if (!email || !password) {
+      setError("Both email and password are required.");
+      setLoading(false);
+      return;
+    }
+  
+    // Simple email format validation (you can refine it further)
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailPattern.test(email)) {
+      setError("Please enter a valid email address.");
+      setLoading(false);
+      return;
+    }
+  
+    setLoading(true);
+    setError(""); // Clear any previous error
+  
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+  
+    if (error) {
+      setError(error.message || "An error occurred. Please try again.");
+      setLoading(false);
+    } else {
+      // Handle successful login (e.g., redirect, show user info, etc.)
+      console.log("Login successful:", data.user);
+      setLoading(false);
+      redirect('/')
+      // Redirect or update UI after successful login
+    }
+  };
+
   return (
     <div className='flex items-center justify-center min-h-screen '>
       <div className={classes.formContainer}>
         <p className={classes.title}>Login</p>
-        <form className={classes.form}>
+
+        <form className={classes.form} onSubmit={handleLogin}>
           <div className={classes.inputGroup}>
-            <label htmlFor="username">Username</label>
-            <input type="text" name="username" id="username" />
+            <label htmlFor="username">Email</label>
+            <input type="text" name="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className={classes.inputGroup}>
             <label htmlFor="password">Password</label>
-            <input type="password" name="password" id="password" />
+            <input type="password" name="password" id="password" value={password} onChange={(e) => setpassword(e.target.value)} />
             <div className={classes.forgot}>
               <a rel="noopener noreferrer" href="#">Forgot Password ?</a>
             </div>
           </div>
-          <button className={classes.sign}>Log in</button>
+          {error && <div className='m-[14px] text-red-500'>{error}</div>}
+          <button className={classes.sign} type='submit'>Log in</button>
         </form>
+
         <div className={classes.socialmessage}>
           <div className={classes.line} />
           <p className={classes.message}>Login with social accounts</p>
