@@ -1,4 +1,6 @@
 import React from 'react';
+import { CheckCircle2 } from 'lucide-react';
+import Link from 'next/link';
 // import { Trophy, Users, GamepadIcon, ArrowRight } from 'lucide-react';
 
 function App() {
@@ -21,6 +23,27 @@ function App() {
             Sign Up
           </button>
         </nav>
+
+        <div className="flex flex-col items-center justify-center min-h-screen p-6">
+          <div className="flex flex-col items-center space-y-4 bg-purple-800 rounded-lg p-8 shadow-lg">
+            {/* Big white tick mark */}
+            <CheckCircle2 className="h-24 w-24 text-white" />
+
+            {/* Success message */}
+            <p className="text-2xl font-semibold text-white text-center">
+              Account verified successfully!
+            </p>
+
+            {/* Redirect button */}
+            <Link
+            href="/"
+               // Replace with your redirect logic
+              className="mt-6 px-6 py-3 bg-white text-violet-700 rounded-lg font-semibold hover:bg-violet-100 transition duration-300"
+            >
+              Go to Home
+            </Link>
+          </div>
+        </div>
 
         {/* Main Hero Content */}
         <div className="text-center mt-32">

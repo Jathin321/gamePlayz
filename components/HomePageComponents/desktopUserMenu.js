@@ -2,17 +2,38 @@
 
 import { ChevronDown } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { getUserSlugByEmail } from "@/util/getPrismaUserSlug";
+import { useEffect, useState } from "react";
 import { useAuth } from '@/context/authContext';
 
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const {user, logout} = useAuth()
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
+  const [loading, setLoading] = useState(true);
+  const [slug,setSlug] = useState("");
+  // console.log(user.user_metadata.email)
+  const userEmail = user?.user_metadata.email || null;
 
-  const {user, logout} = useAuth()
+  useEffect(() => {
+    const fetchSlug = async () => {
+      setLoading(true)
+      try {
+        const userSlug = await getUserSlugByEmail(userEmail);
+        setSlug(userSlug);
+      } catch (error) {
+        console.error(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (userEmail) fetchSlug();
+  }, [userEmail]);
+
 
   return (
     // Desktop Profile Icons 
@@ -46,7 +67,7 @@ const UserMenu = () => {
           tabIndex="-1"
         >
           <Link
-            href="/profile/123"
+            href={`/profile/${slug}`}
             className="block px-4 py-2 text-sm text-gray-300"
             role="menuitem"
             tabIndex="-1"

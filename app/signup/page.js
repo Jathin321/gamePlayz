@@ -1,6 +1,5 @@
 'use client';
-import Link from "next/link";
-import { use, useState } from "react";
+import { useState } from "react";
 import classes from "./style.module.css";
 import { supabase } from "@/util/supabase";
 
@@ -9,6 +8,7 @@ const SignUp = () => {
   const [email,setEmail] = useState("")
   const [password,setpassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [msg, setMsg] = useState("")
   const [error,setError]= useState("");
   const [loading, setLoading] = useState(false)
 
@@ -44,15 +44,18 @@ const SignUp = () => {
   
     // Signup request to Supabase
     const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: email,
+      password: password,
+      options: {
+        data: { username },
+      },
     });
   
     if (error) {
       setError(error.message);
       console.log(error.message);
     } else {
-      alert("Signup successful! Check your email for verification.");
+      setMsg("Signup successful! Check your email for verification.");
       console.log("check your email for verification");
     }
   
@@ -108,6 +111,7 @@ const SignUp = () => {
   
           {/* Show error message */}
           {error && <div className="text-red-500 m-[14px]">{error}</div>}
+          {msg && <div className="text-green-500 m-[14px]">{msg}</div>}
   
           <button className={classes.sign} type="submit" disabled={loading}>
             {loading ? "Signing Up..." : "Register"}
