@@ -1,13 +1,12 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import OpenOptions from "./OpenOptions";
 import UserMenu from "./desktopUserMenu";
-import { useAuth } from "@/context/authContext";
+import { getAuthToken } from "@/actions/auth";
 
-const Header = () => {
-  const { user, logout } = useAuth();
+async function Header() {
+
+  const token = await getAuthToken();
 
   return (
     <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
@@ -29,7 +28,7 @@ const Header = () => {
 
         {/* Login/Logout/Profile */}
         <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          {user ? (
+          {token ? (
             <UserMenu /> // If the user is logged in, show UserMenu
           ) : (
             <Link

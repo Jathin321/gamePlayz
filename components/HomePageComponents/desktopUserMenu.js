@@ -1,26 +1,42 @@
-'use client';
+"use client";
 
-import { ChevronDown } from 'lucide-react';
-import Link from 'next/link';
+import { ChevronDown } from "lucide-react";
+import Link from "next/link";
 import { getUserSlugByEmail } from "@/util/getPrismaUserSlug";
 import { useEffect, useState } from "react";
-import { useAuth } from '@/context/authContext';
+import { getAuthToken } from "@/actions/auth";
+import { logout as session_logout } from "@/actions/auth";
 
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const {user, logout} = useAuth()
-
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
-  };
+  const [token, setToken] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [slug, setSlug] = useState("");
   const [loading, setLoading] = useState(true);
-  const [slug,setSlug] = useState("");
-  // console.log(user.user_metadata.email)
-  const userEmail = user?.user_metadata.email || null;
 
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  // Fetch token
   useEffect(() => {
-    const fetchSlug = async () => {
-      setLoading(true)
+    async function fetchToken() {
+      const fetchedToken = await getAuthToken();
+      setToken(fetchedToken);
+    }
+    fetchToken();
+  }, []);
+
+  // Fetch user email from localStorage
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) setUserEmail(user);
+  }, []);
+
+  // Fetch slug when token and userEmail are available
+  useEffect(() => {
+    if (!token || !userEmail) return;
+
+    async function fetchSlug() {
+      setLoading(true);
       try {
         const userSlug = await getUserSlugByEmail(userEmail);
         setSlug(userSlug);
@@ -29,14 +45,21 @@ const UserMenu = () => {
       } finally {
         setLoading(false);
       }
-    };
+    }
 
-    if (userEmail) fetchSlug();
-  }, [userEmail]);
+    fetchSlug();
+  }, [token, userEmail]); // Added dependencies
 
+  // Logout function
+  const logout = () => {
+    localStorage.removeItem("user");
+    setToken("");
+    setUserEmail("");
+    setSlug("");
+    session_logout();
+  };
 
   return (
-    // Desktop Profile Icons 
     <div className="relative ml-3 hidden lg:block">
       <div>
         <button
@@ -52,9 +75,11 @@ const UserMenu = () => {
           <img
             className="h-8 w-8 rounded-full"
             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-            alt=""
+            alt="User Avatar"
           />
-          <span className='py-1'><ChevronDown/></span>
+          <span className="py-1">
+            <ChevronDown />
+          </span>
         </button>
       </div>
 
@@ -70,8 +95,6 @@ const UserMenu = () => {
             href={`/profile/${slug}`}
             className="block px-4 py-2 text-sm text-gray-300"
             role="menuitem"
-            tabIndex="-1"
-            id="user-menu-item-0"
           >
             Your Profile
           </Link>
@@ -80,8 +103,6 @@ const UserMenu = () => {
             href="/myTournaments"
             className="block px-4 py-2 text-sm text-gray-300"
             role="menuitem"
-            tabIndex="-1"
-            id="user-menu-item-1"
           >
             My Tournaments
           </Link>
@@ -90,8 +111,6 @@ const UserMenu = () => {
             href="/myScrims"
             className="block px-4 py-2 text-sm text-gray-300"
             role="menuitem"
-            tabIndex="-1"
-            id="user-menu-item-1"
           >
             My Scrims
           </Link>
@@ -100,8 +119,6 @@ const UserMenu = () => {
             href="/mySpaces"
             className="block px-4 py-2 text-sm text-gray-300"
             role="menuitem"
-            tabIndex="-1"
-            id="user-menu-item-1"
           >
             My Spaces
           </Link>
@@ -110,8 +127,6 @@ const UserMenu = () => {
             href="/myTeams"
             className="block px-4 py-2 text-sm text-gray-300"
             role="menuitem"
-            tabIndex="-1"
-            id="user-menu-item-1"
           >
             My Teams
           </Link>
@@ -120,27 +135,21 @@ const UserMenu = () => {
             href="/myFriends"
             className="block px-4 py-2 text-sm text-gray-300"
             role="menuitem"
-            tabIndex="-1"
-            id="user-menu-item-0"
           >
             My Friends
           </Link>
 
           <Link
-            href=""
+            href="/settings"
             className="block px-4 py-2 text-sm text-gray-300"
             role="menuitem"
-            tabIndex="-1"
-            id="user-menu-item-1"
           >
             Settings
           </Link>
 
           <button
-            className="block px-4 py-2 text-sm text-gray-300"
+            className="block w-full text-left px-4 py-2 text-sm text-gray-300"
             role="menuitem"
-            tabIndex="-1"
-            id="user-menu-item-2"
             onClick={logout}
           >
             Sign out

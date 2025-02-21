@@ -33,6 +33,7 @@ model User {
   @@index([slug]) // Indexing for slug
   @@index([username]) // Indexing for username
   @@index([email])   // Indexing for email
+  Spaces Space[]
 }
 
 enum MostActive {
@@ -45,4 +46,19 @@ enum Gender {
   Male
   Female
   Other
+}
+
+model Space {
+  id          String   @id @default(cuid()) @map("_id")
+  slug        String   @unique
+  spaceName   String   @map("space_name")
+  desc        String   @db.Text
+  createdAt   DateTime @default(now()) @map("createdAt")
+  updatedAt   DateTime @updatedAt @map("updatedAt")
+  profilePic  String   @map("profile_pic")
+  banner      String   
+  admin       User     @relation(fields : [adminId], references: [id])
+  adminId     String   
+  
+  @@map("spaces")
 }

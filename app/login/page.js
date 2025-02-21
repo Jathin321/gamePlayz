@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { supabase } from '@/util/supabase';
+import { login } from '@/actions/auth';
 import Link from 'next/link';
 import classes from './style.module.css'
 import { redirect } from 'next/navigation';
@@ -31,18 +31,18 @@ const Login = () => {
   
     setLoading(true);
     setError(""); // Clear any previous error
-  
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-  
-    if (error) {
-      setError(error.message || "An error occurred. Please try again.");
-      setLoading(false);
-    } else {
+
+    const response = await login(email, password);
+    
+    if (response?.error) {
+      setError(response?.error)
+      setLoading(false)
+      return { error: response.error };
+    }
+    else {
       // Handle successful login (e.g., redirect, show user info, etc.)
-      console.log("Login successful:", data.user);
+      console.log("Login successful:");
+      localStorage.setItem("user",email)
       setLoading(false);
       redirect('/')
       // Redirect or update UI after successful login

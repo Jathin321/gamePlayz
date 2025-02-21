@@ -5,6 +5,7 @@ import { redirect, useSearchParams } from "next/navigation";
 import { supabase } from "@/util/supabase";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
+import { login } from "@/actions/auth";
 
 export default function VerifyAccount() {
   const searchParams = useSearchParams();
@@ -12,9 +13,8 @@ export default function VerifyAccount() {
   const [errorMessage, setErrorMessage] = useState("");
 
   // Protecting the Route
-  if(!searchParams.get("token_hash"))
-  {
-    redirect('/')
+  if (!searchParams.get("token_hash")) {
+    redirect("/");
   }
 
   useEffect(() => {
@@ -86,9 +86,8 @@ export default function VerifyAccount() {
         });
         console.log("response : ", response);
 
-        if (response.ok == true) {
+        if (response.ok) {
           setStatus("success");
-          // setTimeout(() => redirect("/login"), 4000);
         } else {
           setStatus("error");
           setErrorMessage(
@@ -116,25 +115,19 @@ export default function VerifyAccount() {
         </div>
       ) : status === "success" ? (
         <div className="flex flex-col items-center justify-center min-h-screen p-6">
-        <div className="flex flex-col items-center space-y-4 bg-purple-800 rounded-lg p-8 shadow-lg">
-          {/* Big white tick mark */}
-          <CheckCircle2 className="h-24 w-24 text-white" />
-
-          {/* Success message */}
-          <p className="text-2xl font-semibold text-white text-center">
-            Account verified successfully!
-          </p>
-
-          {/* Redirect button */}
-          <Link
-          href="/"
-             // Replace with your redirect logic
-            className="mt-6 px-6 py-3 bg-white text-violet-700 rounded-lg font-semibold hover:bg-violet-100 transition duration-300"
-          >
-            Go to Home
-          </Link>
+          <div className="flex flex-col items-center space-y-4 bg-purple-800 rounded-lg p-8 shadow-lg">
+            <CheckCircle2 className="h-24 w-24 text-white" />
+            <p className="text-2xl font-semibold text-white text-center">
+              Account verified successfully!
+            </p>
+            <Link
+              href="/login"
+              className="mt-6 px-6 py-3 bg-white text-violet-700 rounded-lg font-semibold hover:bg-violet-100 transition duration-300"
+            >
+              Login Now
+            </Link>
+          </div>
         </div>
-      </div>
       ) : (
         <div className="flex flex-col items-center space-y-4">
           <XCircle className="h-12 w-12 text-red-500" />

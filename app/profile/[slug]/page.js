@@ -155,393 +155,406 @@ async function Profile({ params }) {
   const curr_user = await prisma.user.findUnique({
     where: { slug },
   });
-  console.log("User : ",curr_user);
+  // console.log("User : ",curr_user);
 
   return (
     <>
-    {curr_user ? <div className="min-h-screen mt-16 text-white pb-12">
-        {/* Banner */}
-        <div className="relative h-80">
-          <img
-            src={userProfile.banner}
-            alt="Profile Banner"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40"></div>
-        </div>
+      {curr_user ? (
+        <div className="min-h-screen mt-16 text-white pb-12">
+          {/* Banner */}
+          <div className="relative h-80">
+            <img
+              src={userProfile.banner}
+              alt="Profile Banner"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black/40"></div>
+          </div>
 
-        {/* Profile Header */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
-          <div className="bg-gray-800 rounded-lg shadow-xl p-6">
-            <div className="sm:flex sm:items-center sm:justify-between">
-              <div className="sm:flex sm:space-x-5">
-                <div className="relative">
-                  <img
-                    className="h-32 w-32 rounded-full border-4 border-purple-500 object-cover"
-                    src={userProfile.avatar}
-                    alt={userProfile.username}
-                  />
-                  {/* prifile level can be used as edit button  */}
-                  {/* <span className="absolute bottom-0 right-0 transform translate-y-1/4 w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center border-4 border-gray-800">
+          {/* Profile Header */}
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 relative z-10">
+            <div className="bg-gray-800 rounded-lg shadow-xl p-6">
+              <div className="sm:flex sm:items-center sm:justify-between">
+                <div className="sm:flex sm:space-x-5">
+                  <div className="relative">
+                    <img
+                      className="h-32 w-32 rounded-full border-4 border-purple-500 object-cover"
+                      src={userProfile.avatar}
+                      alt={userProfile.username}
+                    />
+                    {/* prifile level can be used as edit button  */}
+                    {/* <span className="absolute bottom-0 right-0 transform translate-y-1/4 w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center border-4 border-gray-800">
                   {userProfile.level}
                 </span> */}
-                </div>
-                <div className="pt-8 sm:mt-0 sm:text-left">
-                  <div className="flex sm:justify-start gap-2">
-                    <h1 className="text-2xl font-bold">
-                      {curr_user.username}
-                    </h1>
-                   <EditButton email={curr_user.email}/>
-                    <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
-                      <Share2 className="w-4 h-4 text-gray-400" />
-                    </button>
                   </div>
-                  <p className="text-sm text-gray-400">{curr_user.bio?curr_user.bio:""}</p>
+                  <div className="pt-8 sm:mt-0 sm:text-left">
+                    <div className="flex sm:justify-start gap-2">
+                      <h1 className="text-2xl font-bold">
+                        {curr_user.username}
+                      </h1>
+                      <EditButton email={curr_user.email} />
+                      <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
+                        <Share2 className="w-4 h-4 text-gray-400" />
+                      </button>
+                    </div>
+                    <p className="text-sm text-gray-400">
+                      {curr_user.bio ? curr_user.bio : ""}
+                    </p>
 
-                  <div className="pt-8 sm:mt-0 flex justify-center gap-4 flex-wrap">
-                    {/* Tournaments */}
-                    <div className="text-center bg-gradient-to-br from-purple-600 to-blue-500 p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                      <div className="flex items-center justify-center gap-2">
-                        <Trophy className="w-5 h-5 text-white" />
-                        <p className="text-sm font-semibold text-white">
-                          {userProfile.totalTournaments}
+                    <div className="pt-8 sm:mt-0 flex justify-center gap-4 flex-wrap">
+                      {/* Tournaments */}
+                      <div className="text-center bg-gradient-to-br from-purple-600 to-blue-500 p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div className="flex items-center justify-center gap-2">
+                          <Trophy className="w-5 h-5 text-white" />
+                          <p className="text-sm font-semibold text-white">
+                            {userProfile.totalTournaments}
+                          </p>
+                        </div>
+                        <p className="text-sm text-gray-200 mt-2">
+                          Tournaments
                         </p>
                       </div>
-                      <p className="text-sm text-gray-200 mt-2">Tournaments</p>
-                    </div>
 
-                    {/* Scrims */}
-                    <div className="text-center bg-gradient-to-br from-green-600 to-teal-500 p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                      <div className="flex items-center justify-center gap-2">
-                        <Swords className="w-5 h-5 text-white" />
-                        <p className="text-sm font-semibold text-white">21</p>
+                      {/* Scrims */}
+                      <div className="text-center bg-gradient-to-br from-green-600 to-teal-500 p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div className="flex items-center justify-center gap-2">
+                          <Swords className="w-5 h-5 text-white" />
+                          <p className="text-sm font-semibold text-white">21</p>
+                        </div>
+                        <p className="text-sm text-gray-200 mt-2">Scrims</p>
                       </div>
-                      <p className="text-sm text-gray-200 mt-2">Scrims</p>
-                    </div>
 
-                    {/* Wins */}
-                    <div className="text-center bg-gradient-to-br from-yellow-600 to-orange-500 p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                      <div className="flex items-center justify-center gap-2">
-                        <Star className="w-5 h-5 text-white" />
-                        <p className="text-sm font-semibold text-white">
-                          {userProfile.tournamentsWon}
+                      {/* Wins */}
+                      <div className="text-center bg-gradient-to-br from-yellow-600 to-orange-500 p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div className="flex items-center justify-center gap-2">
+                          <Star className="w-5 h-5 text-white" />
+                          <p className="text-sm font-semibold text-white">
+                            {userProfile.tournamentsWon}
+                          </p>
+                        </div>
+                        <p className="text-sm text-gray-200 mt-2">Wins</p>
+                      </div>
+
+                      {/* Most Active Time */}
+                      <div className="text-center bg-gradient-to-br from-pink-600 to-red-500 p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div className="flex items-center justify-center gap-2">
+                          <Clock className="w-5 h-5 text-white" />
+                          <p className="text-sm font-semibold text-white">
+                            Evening
+                          </p>
+                        </div>
+                        <p className="text-sm text-gray-200 mt-2">
+                          Most Active
                         </p>
                       </div>
-                      <p className="text-sm text-gray-200 mt-2">Wins</p>
-                    </div>
 
-                    {/* Most Active Time */}
-                    <div className="text-center bg-gradient-to-br from-pink-600 to-red-500 p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                      <div className="flex items-center justify-center gap-2">
-                        <Clock className="w-5 h-5 text-white" />
-                        <p className="text-sm font-semibold text-white">
-                          Evening
+                      {/* Most Played Game */}
+                      <div className="text-center bg-gradient-to-br from-indigo-600 to-purple-500 p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div className="flex items-center justify-center gap-2">
+                          <Gamepad2 className="w-5 h-5 text-white" />
+                          <p className="text-sm font-semibold text-white">
+                            Free Fire
+                          </p>
+                        </div>
+                        <p className="text-sm text-gray-200 mt-2">
+                          Most Played Game
                         </p>
                       </div>
-                      <p className="text-sm text-gray-200 mt-2">Most Active</p>
-                    </div>
-
-                    {/* Most Played Game */}
-                    <div className="text-center bg-gradient-to-br from-indigo-600 to-purple-500 p-3 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                      <div className="flex items-center justify-center gap-2">
-                        <Gamepad2 className="w-5 h-5 text-white" />
-                        <p className="text-sm font-semibold text-white">
-                          Free Fire
-                        </p>
-                      </div>
-                      <p className="text-sm text-gray-200 mt-2">
-                        Most Played Game
-                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Level Progress */}
-            <div className="mt-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-gray-400">
-                  Level {userProfile.level}
-                </span>
-                <span className="text-sm text-gray-400">
-                  {userProfile.xp} XP
-                </span>
-              </div>
-              <div className="h-2 bg-gray-700 rounded-full">
-                <div
-                  className="h-full bg-purple-500 rounded-full"
-                  style={{
-                    width: `${calculateLevelProgress(userProfile.xp)}%`,
-                  }}
-                ></div>
+              {/* Level Progress */}
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-400">
+                    Level {userProfile.level}
+                  </span>
+                  <span className="text-sm text-gray-400">
+                    {userProfile.xp} XP
+                  </span>
+                </div>
+                <div className="h-2 bg-gray-700 rounded-full">
+                  <div
+                    className="h-full bg-purple-500 rounded-full"
+                    style={{
+                      width: `${calculateLevelProgress(userProfile.xp)}%`,
+                    }}
+                  ></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Main Content */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column */}
-            <div className="space-y-6">
-              {/* Basic Information */}
-              <div className="bg-gray-800 rounded-lg shadow-xl p-6">
-                <h2 className="text-xl font-semibold mb-4">
-                  Basic Information
-                </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <User className="w-5 h-5 text-purple-400" />
-                    <div>
-                      <div className="text-sm text-gray-400">Full Name</div>
-                      <div>{userProfile.name}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-purple-400" />
-                    <div>
-                      <div className="text-sm text-gray-400">Email</div>
-                      <div>{curr_user.email}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <MapPin className="w-5 h-5 text-purple-400" />
-                    <div>
-                      <div className="text-sm text-gray-400">Location</div>
-                      <div>{userProfile.location}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <Calendar className="w-5 h-5 text-purple-400" />
-                    <div>
-                      <div className="text-sm text-gray-400">Joined</div>
+          {/* Main Content */}
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Left Column */}
+              <div className="space-y-6">
+                {/* Basic Information */}
+                <div className="bg-gray-800 rounded-lg shadow-xl p-6">
+                  <h2 className="text-xl font-semibold mb-4">
+                    Basic Information
+                  </h2>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <User className="w-5 h-5 text-purple-400" />
                       <div>
-                        {new Date(curr_user.createdAt).toLocaleDateString()}
+                        <div className="text-sm text-gray-400">Full Name</div>
+                        <div>{curr_user.fullname || "None"}</div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* My Teams */}
-              <div className="bg-gray-800 rounded-lg shadow-xl p-6">
-                <h2 className="text-xl font-semibold mb-4">My Teams</h2>
-                <div className="space-y-4">
-                  {userProfile.teams.map((team) => (
-                    <div
-                      key={team.id}
-                      className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={team.logo}
-                            alt={team.name}
-                            className="w-10 h-10 rounded-full"
-                          />
-                          <div>
-                            <div className="font-semibold">{team.name}</div>
-                            <div className="text-sm text-gray-400">
-                              <span>{team.members} members</span> •{" "}
-                              <span>{team.rank}</span>
-                            </div>
-                          </div>
+                    <div className="flex items-center gap-3">
+                      <Mail className="w-5 h-5 text-purple-400" />
+                      <div>
+                        <div className="text-sm text-gray-400">Email</div>
+                        <div>{curr_user.email || "None"}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <MapPin className="w-5 h-5 text-purple-400" />
+                      <div>
+                        <div className="text-sm text-gray-400">Location</div>
+                        <div>{curr_user.location || "none"}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Calendar className="w-5 h-5 text-purple-400" />
+                      <div>
+                        <div className="text-sm text-gray-400">Joined</div>
+                        <div>
+                          {new Date(curr_user.createdAt).toLocaleDateString()}
                         </div>
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* My Spaces */}
-              <div className="bg-gray-800 rounded-lg shadow-xl p-6">
-                <h2 className="text-xl font-semibold mb-4">My Spaces</h2>
-                <div className="space-y-4">
-                  {userProfile.spaces.map((space) => (
-                    <div
-                      key={space.id}
-                      className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <img
-                            src={space.icon}
-                            alt={space.name}
-                            className="w-10 h-10 rounded-lg"
-                          />
-                          <div>
-                            <div className="font-semibold">{space.name}</div>
-                            <div className="text-sm text-gray-400">
-                              <span>{space.members} members</span> •{" "}
-                              <span>{space.role}</span>
-                            </div>
-                          </div>
-                        </div>
-                        <ChevronRight className="w-5 h-5 text-gray-400" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Game Statistics */}
-              {userProfile.gameStats.map((stat, index) => (
-                <div
-                  key={index}
-                  className="bg-gray-800 rounded-lg shadow-xl p-6"
-                >
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-semibold">{stat.game} Stats</h2>
-                    <div className="flex items-center gap-2">
-                      <img
-                        src={stat.rankIcon}
-                        alt={stat.rank}
-                        className="w-8 h-8 rounded-full"
-                      />
-                      <span className="font-semibold">{stat.rank}</span>
                     </div>
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                    <div className="bg-gray-700/50 rounded-lg p-4">
-                      <div className="flex items-center gap-2 text-purple-400 mb-2">
-                        <Gamepad2 className="w-5 h-5" />
-                        <span className="text-sm">Matches</span>
-                      </div>
-                      <p className="text-2xl font-bold">{stat.matches}</p>
-                    </div>
-
-                    <div className="bg-gray-700/50 rounded-lg p-4">
-                      <div className="flex items-center gap-2 text-green-400 mb-2">
-                        <Trophy className="w-5 h-5" />
-                        <span className="text-sm">Win Rate</span>
-                      </div>
-                      <p className="text-2xl font-bold">{stat.winRate}%</p>
-                    </div>
-
-                    <div className="bg-gray-700/50 rounded-lg p-4">
-                      <div className="flex items-center gap-2 text-blue-400 mb-2">
-                        <Target className="w-5 h-5" />
-                        <span className="text-sm">Avg Score</span>
-                      </div>
-                      <p className="text-2xl font-bold">{stat.avgScore}</p>
-                    </div>
-
-                    <div className="bg-gray-700/50 rounded-lg p-4">
-                      <div className="flex items-center gap-2 text-yellow-400 mb-2">
-                        <Clock className="w-5 h-5" />
-                        <span className="text-sm">Playtime</span>
-                      </div>
-                      <p className="text-2xl font-bold">{stat.playtime}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-6">
-                    <div className="h-2 bg-gray-700 rounded-full">
+                {/* My Teams */}
+                <div className="bg-gray-800 rounded-lg shadow-xl p-6">
+                  <h2 className="text-xl font-semibold mb-4">My Teams</h2>
+                  <div className="space-y-4">
+                    {userProfile.teams.map((team) => (
                       <div
-                        className="h-full bg-purple-500 rounded-full"
-                        style={{ width: `${stat.winRate}%` }}
-                      ></div>
-                    </div>
-                    <div className="flex justify-between mt-2 text-sm text-gray-400">
-                      <span>{stat.wins} Wins</span>
-                      <span>{stat.matches - stat.wins} Losses</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              {/* My Tournaments */}
-              <div className="bg-gray-800 rounded-lg shadow-xl p-6">
-                <h2 className="text-xl font-semibold mb-4">My Tournaments</h2>
-                <div className="space-y-4">
-                  {userProfile.tournaments.map((tournament) => (
-                    <div
-                      key={tournament.id}
-                      className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="font-semibold">{tournament.name}</div>
-                          <div className="text-sm text-gray-400">
-                            <span>{tournament.game}</span> •
-                            <span>
-                              {" "}
-                              {new Date(tournament.date).toLocaleDateString()}
-                            </span>
-                            {tournament.placement && (
-                              <span> • #{tournament.placement} place</span>
-                            )}
+                        key={team.id}
+                        className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={team.logo}
+                              alt={team.name}
+                              className="w-10 h-10 rounded-full"
+                            />
+                            <div>
+                              <div className="font-semibold">{team.name}</div>
+                              <div className="text-sm text-gray-400">
+                                <span>{team.members} members</span> •{" "}
+                                <span>{team.rank}</span>
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                        <div
-                          className={`px-3 py-1 rounded-full text-sm ${
-                            tournament.status === "upcoming"
-                              ? "bg-blue-500/20 text-blue-400"
-                              : tournament.status === "ongoing"
-                              ? "bg-green-500/20 text-green-400"
-                              : "bg-purple-500/20 text-purple-400"
-                          }`}
-                        >
-                          {tournament.status.charAt(0).toUpperCase() +
-                            tournament.status.slice(1)}
+                          <ChevronRight className="w-5 h-5 text-gray-400" />
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
+                </div>
+
+                {/* My Spaces */}
+                <div className="bg-gray-800 rounded-lg shadow-xl p-6">
+                  <h2 className="text-xl font-semibold mb-4">My Spaces</h2>
+                  <div className="space-y-4">
+                    {userProfile.spaces.map((space) => (
+                      <div
+                        key={space.id}
+                        className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={space.icon}
+                              alt={space.name}
+                              className="w-10 h-10 rounded-lg"
+                            />
+                            <div>
+                              <div className="font-semibold">{space.name}</div>
+                              <div className="text-sm text-gray-400">
+                                <span>{space.members} members</span> •{" "}
+                                <span>{space.role}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <ChevronRight className="w-5 h-5 text-gray-400" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {/* My Scrims */}
-              <div className="bg-gray-800 rounded-lg shadow-xl p-6">
-                <h2 className="text-xl font-semibold mb-4">My Scrims</h2>
-                <div className="space-y-4">
-                  {userProfile.scrims.map((scrim) => (
-                    <div
-                      key={scrim.id}
-                      className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="font-semibold">
-                            vs {scrim.opponent}
-                          </div>
-                          <div className="text-sm text-gray-400">
-                            <span>{scrim.game}</span> •
-                            <span>
-                              {" "}
-                              {new Date(scrim.date).toLocaleDateString()}
-                            </span>
-                            {scrim.result && (
-                              <span> • {scrim.result.toUpperCase()}</span>
-                            )}
-                          </div>
-                        </div>
-                        <div
-                          className={`px-3 py-1 rounded-full text-sm ${
-                            scrim.status === "scheduled"
-                              ? "bg-blue-500/20 text-blue-400"
-                              : "bg-purple-500/20 text-purple-400"
-                          }`}
-                        >
-                          {scrim.status.charAt(0).toUpperCase() +
-                            scrim.status.slice(1)}
-                        </div>
+              {/* Right Column */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Game Statistics */}
+                {userProfile.gameStats.map((stat, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-800 rounded-lg shadow-xl p-6"
+                  >
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-semibold">
+                        {stat.game} Stats
+                      </h2>
+                      <div className="flex items-center gap-2">
+                        <img
+                          src={stat.rankIcon}
+                          alt={stat.rank}
+                          className="w-8 h-8 rounded-full"
+                        />
+                        <span className="font-semibold">{stat.rank}</span>
                       </div>
                     </div>
-                  ))}
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-purple-400 mb-2">
+                          <Gamepad2 className="w-5 h-5" />
+                          <span className="text-sm">Matches</span>
+                        </div>
+                        <p className="text-2xl font-bold">{stat.matches}</p>
+                      </div>
+
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-green-400 mb-2">
+                          <Trophy className="w-5 h-5" />
+                          <span className="text-sm">Win Rate</span>
+                        </div>
+                        <p className="text-2xl font-bold">{stat.winRate}%</p>
+                      </div>
+
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-blue-400 mb-2">
+                          <Target className="w-5 h-5" />
+                          <span className="text-sm">Avg Score</span>
+                        </div>
+                        <p className="text-2xl font-bold">{stat.avgScore}</p>
+                      </div>
+
+                      <div className="bg-gray-700/50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-yellow-400 mb-2">
+                          <Clock className="w-5 h-5" />
+                          <span className="text-sm">Playtime</span>
+                        </div>
+                        <p className="text-2xl font-bold">{stat.playtime}</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-6">
+                      <div className="h-2 bg-gray-700 rounded-full">
+                        <div
+                          className="h-full bg-purple-500 rounded-full"
+                          style={{ width: `${stat.winRate}%` }}
+                        ></div>
+                      </div>
+                      <div className="flex justify-between mt-2 text-sm text-gray-400">
+                        <span>{stat.wins} Wins</span>
+                        <span>{stat.matches - stat.wins} Losses</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* My Tournaments */}
+                <div className="bg-gray-800 rounded-lg shadow-xl p-6">
+                  <h2 className="text-xl font-semibold mb-4">My Tournaments</h2>
+                  <div className="space-y-4">
+                    {userProfile.tournaments.map((tournament) => (
+                      <div
+                        key={tournament.id}
+                        className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="font-semibold">
+                              {tournament.name}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              <span>{tournament.game}</span> •
+                              <span>
+                                {" "}
+                                {new Date(tournament.date).toLocaleDateString()}
+                              </span>
+                              {tournament.placement && (
+                                <span> • #{tournament.placement} place</span>
+                              )}
+                            </div>
+                          </div>
+                          <div
+                            className={`px-3 py-1 rounded-full text-sm ${
+                              tournament.status === "upcoming"
+                                ? "bg-blue-500/20 text-blue-400"
+                                : tournament.status === "ongoing"
+                                ? "bg-green-500/20 text-green-400"
+                                : "bg-purple-500/20 text-purple-400"
+                            }`}
+                          >
+                            {tournament.status.charAt(0).toUpperCase() +
+                              tournament.status.slice(1)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* My Scrims */}
+                <div className="bg-gray-800 rounded-lg shadow-xl p-6">
+                  <h2 className="text-xl font-semibold mb-4">My Scrims</h2>
+                  <div className="space-y-4">
+                    {userProfile.scrims.map((scrim) => (
+                      <div
+                        key={scrim.id}
+                        className="bg-gray-700/50 rounded-lg p-4 hover:bg-gray-700 transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="font-semibold">
+                              vs {scrim.opponent}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              <span>{scrim.game}</span> •
+                              <span>
+                                {" "}
+                                {new Date(scrim.date).toLocaleDateString()}
+                              </span>
+                              {scrim.result && (
+                                <span> • {scrim.result.toUpperCase()}</span>
+                              )}
+                            </div>
+                          </div>
+                          <div
+                            className={`px-3 py-1 rounded-full text-sm ${
+                              scrim.status === "scheduled"
+                                ? "bg-blue-500/20 text-blue-400"
+                                : "bg-purple-500/20 text-purple-400"
+                            }`}
+                          >
+                            {scrim.status.charAt(0).toUpperCase() +
+                              scrim.status.slice(1)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>: <div>User Not Found</div> }
-      
+      ) : (
+        <div>User Not Found</div>
+      )}
     </>
   );
 }

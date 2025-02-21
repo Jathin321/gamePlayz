@@ -1,16 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import NavItems2 from "./navItems";
-import { useAuth } from "@/context/authContext";
+import { getAuthToken } from "@/actions/auth";
+import { logout } from "@/actions/auth";
 
 export default function OpenOptions() {
   const [isOpen, setIsOpen] = useState(false);
+  const [token,setToken] = useState(null)
   const pathname = usePathname();
-  const {user, logout} = useAuth();
+
+  async function getToken(){
+    const token = await getAuthToken()
+    setToken(token)
+  }
+
+  useEffect( () => {
+    getToken();
+  },[])
+  
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -93,7 +104,7 @@ export default function OpenOptions() {
         </ul> */}
         <NavItems2 />
 
-        {user ? (
+        {token ? (
           <ul className="lg:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             {userItems.map((item) => (
               <li key={item.href}>
