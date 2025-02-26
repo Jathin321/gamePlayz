@@ -11,6 +11,47 @@ export default function Home() {
       <Header />
       <HeroSection />
 
+      {/* Hero Section */}
+      <div className="mt-14 bg-gradient-to-r rounded-3xl p-8 md:p-12 text-white">
+        <h1 className="text-3xl md:text-5xl font-bold mb-4">
+          Organize Your Esports Events
+        </h1>
+        <p className="text-lg md:text-xl mb-8">
+          Create and manage tournaments or scrims effortlessly. Bring your
+          community together and elevate your gaming experience.
+        </p>
+
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Create Tournament Card */}
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 flex-1 hover:scale-105 transition-transform duration-300">
+            <div className="flex items-center mb-4">
+              <h2 className="text-2xl font-semibold">Create a Tournament</h2>
+            </div>
+            <p className="text-gray-200 mb-6">
+              Host competitive tournaments, invite players, and track progress
+              with ease.
+            </p>
+            <button className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg transition-colors duration-300">
+              Get Started
+            </button>
+          </div>
+
+          {/* Create Scrim Card */}
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 flex-1 hover:scale-105 transition-transform duration-300">
+            <div className="flex items-center mb-4">
+              <h2 className="text-2xl font-semibold">Create a Scrim</h2>
+            </div>
+            <p className="text-gray-200 mb-6">
+              Set up practice matches, invite teams, and improve your skills in
+              a competitive environment.
+            </p>
+            <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg transition-colors duration-300">
+              Get Started
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="mt-12">
         <div className="flex items-center my-4 lg:px-32 px-4">
           <div className="">

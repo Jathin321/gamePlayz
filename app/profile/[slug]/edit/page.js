@@ -1,20 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Camera,
-  X,
-  Save,
-  User,
-  Mail,
-  MapPin,
-  GamepadIcon,
-  Link as LinkIcon,
-} from "lucide-react";
+import { Camera, Save } from "lucide-react";
 import { useParams } from "next/navigation";
 import GetUser from "@/actions/prismaActions";
 import { useRouter } from "next/navigation";
 import { updateUser } from "@/actions/prismaActions";
+import { getUserEmail } from "@/actions/auth";
+import { getUserSlugByEmail } from "@/actions/prismaActions";
 
 function EditProfile() {
   const [Slug, setSlug] = useState("");
@@ -30,10 +23,11 @@ function EditProfile() {
   const [mostActive, setMostActive] = useState("");
   const [gender, setGender] = useState("");
 
-  const [success,setSuccess] = useState("");
+  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
   const router = useRouter();
+  const { slug } = useParams();
 
   const indianStates = [
     "Andhra Pradesh",
@@ -94,31 +88,35 @@ function EditProfile() {
 
   const activeTimes = ["Morning", "Evening", "Night"];
   const [currUser, setCurrUser] = useState({});
-  const { slug } = useParams();
 
   useEffect(() => {
-    if (!slug) return;
-    // Fetch user from Prisma
     const fetchUser = async () => {
       try {
-        const userData = await GetUser({ slug }); // Call the server function
-        setCurrUser(userData);
-        // console.log("Curr User using slug : ", userData || "User not found");
-        if (userData.email != localStorage.getItem("user")) {
+        const { success, email, error } = await getUserEmail();
+        if (!success) {
+          console.error("Error fetching user email:", error);
           return router.back();
         }
-        else{
-          setUsername(userData.username || "")
-          setFullname(userData.fullname || "")
-          setEmail(userData.email || "")
-          setPhone(userData.phone || "")
-          setDateOfBirth(userData.dateOfBirth || "")
-          setGender(userData.gender || "")
-          setLocation(userData.location || "")
-          setMotherTongue(userData.motherTongue || "")
-          setMostActive(userData.mostActive || "")
-          setSlug(userData.slug || "")
+
+        const userSlug = await getUserSlugByEmail(email);
+        if (userSlug !== slug) {
+          return router.back();
         }
+
+        const userData = await GetUser({ slug: userSlug }); // Call the server function with the fetched slug
+        setCurrUser(userData);
+        console.log("Curr User using slug : ", userData || "User not found");
+
+        setUsername(userData.username || "");
+        setFullname(userData.fullname || "");
+        setEmail(userData.email || "");
+        setPhone(userData.phone || "");
+        setDateOfBirth(userData.dateOfBirth || "");
+        setGender(userData.gender || "");
+        setLocation(userData.location || "");
+        setMotherTongue(userData.motherTongue || "");
+        setMostActive(userData.mostActive || "");
+        setSlug(userData.slug || "");
       } catch (error) {
         console.error("Error fetching user:", error);
       }
@@ -126,97 +124,55 @@ function EditProfile() {
     fetchUser();
   }, [slug]);
 
-  const userFields = [
-    "Slug",
-    "fullname",
-    "username",
-    "email",
-    "phone",
-    "dateOfBirth",
-    "profilePic",
-    "bio",
-    "location",
-    "motherTongue",
-    "mostActive",
-    "gender",
-  ];
-  // const [profile, setProfile] = useState({
-  //   username: "ProGamer123",
-  //   name: "Alex Thompson",
-  //   email: "alex@example.com",
-  //   location: "New York, USA",
-  //   bio: "Competitive gamer since 2018. Specializing in FPS and MOBA games. Always looking for new challenges and teammates!",
-  //   avatar:
-  //     "https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=200&h=200&fit=crop",
-  //   banner:
-  //     "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1500&h=400&fit=crop",
-  //   socialLinks: {
-  //     twitter: "https://twitter.com/progamer123",
-  //     twitch: "https://twitch.tv/progamer123",
-  //     discord: "progamer123#1234",
-  //   },
-  //   gameStats: [
-  //     {
-  //       game: "Valorant",
-  //       matches: 245,
-  //       wins: 168,
-  //       winRate: 68.6,
-  //       avgScore: 285,
-  //       playtime: "386h",
-  //       rank: "Diamond",
-  //       rankIcon:
-  //         "https://images.unsplash.com/photo-1614682835402-6702d65c3918?w=50&h=50&fit=crop",
-  //     },
-  //   ],
-  // });
-
-  const [profile, setProfile] = useState({
-    Slug: "",
-    fullname: "",
-    username: "",
-    email: "",
-    phone: "",
-    dateOfBirth: "",
-    profilePic: "",
-    bio: "",
-    location: "",
-    motherTongue: "",
-    mostActive: "",
-    gender: "",
-  });
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("")
-    setSuccess("")
+    setError("");
+    setSuccess("");
     const updatedData = {};
 
-    if (Slug != currUser.slug && !(Slug == "" && currUser.slug == null)) {updatedData.slug = Slug; console.log(Slug == currUser.slug)}
-    if (username != currUser.username && !(username == "" && currUser.username == null)) updatedData.username = username;
-    if (phone != currUser.phone && !(phone == "" && currUser.phone == null)) {updatedData.phone = phone; console.log(phone, currUser.phone)};
-    if (dateOfBirth != currUser.dateOfBirth && !(dateOfBirth == "" && currUser.dateOfBirth == null)) updatedData.dateOfBirth = dateOfBirth;
-    if (profilePic != currUser.profilePic && !(profilePic == "" && currUser.profilePic == null)) updatedData.profilePic = profilePic;
-    if (bio != currUser.bio && !(bio == "" && currUser.bio == null)) updatedData.bio = bio;
-    if (location != currUser.location && !(location == "" && currUser.location == null)) updatedData.location = location;
-    if (motherTongue != currUser.motherTongue && !(motherTongue == "" && currUser.motherTongue == null)) updatedData.motherTongue = motherTongue;
-    if (mostActive != currUser.mostActive && !(mostActive == "" && currUser.mostActive == null)) updatedData.mostActive = mostActive;
-    if (gender != currUser.gender && !(gender == "" && currUser.gender == null)) updatedData.gender = gender;
-    if (fullname != currUser.fullname && !(fullname == "" && currUser.fullname == null)) updatedData.fullname = fullname;
+    if (Slug !== currUser.slug && !(Slug === "" && currUser.slug == null)) {
+      updatedData.slug = Slug;
+    }
+    if (username !== currUser.username && !(username === "" && currUser.username == null)) {
+      updatedData.username = username;
+    }
+    if (phone !== currUser.phone && !(phone === "" && currUser.phone == null)) {
+      updatedData.phone = phone;
+    }
+    if (dateOfBirth !== currUser.dateOfBirth && !(dateOfBirth === "" && currUser.dateOfBirth == null)) {
+      updatedData.dateOfBirth = dateOfBirth;
+    }
+    if (profilePic !== currUser.profilePic && !(profilePic === "" && currUser.profilePic == null)) {
+      updatedData.profilePic = profilePic;
+    }
+    if (bio !== currUser.bio && !(bio === "" && currUser.bio == null)) {
+      updatedData.bio = bio;
+    }
+    if (location !== currUser.location && !(location === "" && currUser.location == null)) {
+      updatedData.location = location;
+    }
+    if (mostActive !== currUser.mostActive && !(mostActive === "" && currUser.mostActive == null)) {
+      updatedData.mostActive = mostActive;
+    }
+    if (gender !== currUser.gender && !(gender === "" && currUser.gender == null)) {
+      updatedData.gender = gender;
+    }
+    if (fullname !== currUser.fullname && !(fullname === "" && currUser.fullname == null)) {
+      updatedData.fullname = fullname;
+    }
 
-  
     // Check if any field was updated before making the request
     if (Object.keys(updatedData).length === 0) {
       console.log("No changes detected.");
-      setError("No changes detected.")
+      setError("No changes detected.");
       return;
     }
 
     const result = await updateUser(currUser.email, updatedData);
-    if(result.success){
-      setSuccess("Succesfully Updated User Details")
-    }
-    else{
-      setError(result.error)
+    if (result.success) {
+      setSuccess("Successfully Updated User Details");
+    } else {
+      setError(result.error);
     }
   };
 
@@ -228,7 +184,7 @@ function EditProfile() {
           {/* Banner Image */}
           <div className="relative h-64 rounded-lg overflow-hidden">
             <img
-              src={profile.banner}
+              src="{profilePic}"
               alt="Profile Banner"
               className="w-full h-full object-cover"
             />
@@ -246,7 +202,7 @@ function EditProfile() {
           <div className="flex items-center gap-6 -mt-16 relative z-10 mb-8">
             <div className="relative">
               <img
-                src={profile.avatar}
+                src="{profilePic}"
                 alt="Profile Avatar"
                 className="w-32 h-32 rounded-full border-4 border-gray-800 object-cover"
               />
@@ -263,7 +219,7 @@ function EditProfile() {
           <div className="bg-gray-800 rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-6">Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* User Name  */}
+              {/* User Name */}
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2 capitalize">
                   User Name
@@ -278,7 +234,7 @@ function EditProfile() {
                 </div>
               </div>
 
-              {/* Full name  */}
+              {/* Full name */}
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2 capitalize">
                   Full Name
@@ -293,7 +249,7 @@ function EditProfile() {
                 </div>
               </div>
 
-              {/* Email  */}
+              {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2 capitalize">
                   Email
@@ -308,7 +264,7 @@ function EditProfile() {
                 </div>
               </div>
 
-              {/* Phone number  */}
+              {/* Phone number */}
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2 capitalize">
                   Phone Number
@@ -323,7 +279,7 @@ function EditProfile() {
                 </div>
               </div>
 
-              {/* Date of Birth  */}
+              {/* Date of Birth */}
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2 capitalize">
                   Date Of Birth
@@ -338,7 +294,7 @@ function EditProfile() {
                 </div>
               </div>
 
-              {/* Gender  */}
+              {/* Gender */}
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2 capitalize">
                   Gender
@@ -357,7 +313,7 @@ function EditProfile() {
                 </div>
               </div>
 
-              {/* Location  */}
+              {/* Location */}
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2 capitalize">
                   Location
@@ -378,7 +334,7 @@ function EditProfile() {
                 </div>
               </div>
 
-              {/* Mother Toungue  */}
+              {/* Mother Tongue */}
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2 capitalize">
                   Mother Tongue
@@ -399,7 +355,7 @@ function EditProfile() {
                 </div>
               </div>
 
-              {/* Most Active  */}
+              {/* Most Active */}
               <div>
                 <label className="block text-sm font-medium text-gray-400 mb-2 capitalize">
                   Most Active Time
@@ -421,7 +377,7 @@ function EditProfile() {
               </div>
             </div>
 
-            {/* Slug  */}
+            {/* Slug */}
             <div className="mt-4">
               <div>
                 <label
@@ -446,7 +402,7 @@ function EditProfile() {
               </div>
             </div>
 
-            {/* Bio  */}
+            {/* Bio */}
             <div className="mt-6">
               <label className="block text-sm font-medium text-gray-400 mb-2">
                 Bio
@@ -459,32 +415,6 @@ function EditProfile() {
               />
             </div>
           </div>
-
-          {/* Social Links */}
-          {/* <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-6">Social Links</h2>
-            {Object.keys(profile.socialLinks).map((platform, index) => (
-              <div key={index} className="mb-4">
-                <label className="block text-sm font-medium text-gray-400 mb-2 capitalize">
-                  {platform}
-                </label>
-                <input
-                  type="text"
-                  value={profile.socialLinks[platform]}
-                  onChange={(e) =>
-                    setProfile({
-                      ...profile,
-                      socialLinks: {
-                        ...profile.socialLinks,
-                        [platform]: e.target.value,
-                      },
-                    })
-                  }
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-            ))}
-          </div> */}
 
           {success && <div className="text-green-500 m-[14px]">{success}</div>}
           {error && <div className="text-red-500 m-[14px]">{error}</div>}

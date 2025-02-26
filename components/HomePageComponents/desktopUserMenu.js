@@ -2,59 +2,46 @@
 
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
-import { getUserSlugByEmail } from "@/util/getPrismaUserSlug";
 import { useEffect, useState } from "react";
-import { getAuthToken } from "@/actions/auth";
-import { logout as session_logout } from "@/actions/auth";
+import { getAuthToken, getUserEmail, logout as session_logout } from "@/actions/auth";
+import { getUserSlugByEmail } from "@/actions/prismaActions";
 
 const UserMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [token, setToken] = useState("");
-  const [userEmail, setUserEmail] = useState("");
   const [slug, setSlug] = useState("");
   const [loading, setLoading] = useState(true);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  // Fetch token
-  useEffect(() => {
-    async function fetchToken() {
+  // Fetch token, email, and slug
+  async function fetchTokenEmailAndSlug() {
+    setLoading(true);
+    try {
       const fetchedToken = await getAuthToken();
       setToken(fetchedToken);
-    }
-    fetchToken();
-  }, []);
 
-  // Fetch user email from localStorage
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) setUserEmail(user);
-  }, []);
-
-  // Fetch slug when token and userEmail are available
-  useEffect(() => {
-    if (!token || !userEmail) return;
-
-    async function fetchSlug() {
-      setLoading(true);
-      try {
-        const userSlug = await getUserSlugByEmail(userEmail);
-        setSlug(userSlug);
-      } catch (error) {
-        console.error(error.message);
-      } finally {
-        setLoading(false);
+      const { success, email, error } = await getUserEmail();
+      if (success) {
+        const fetchedSlug = await getUserSlugByEmail(email);
+        setSlug(fetchedSlug);
+      } else {
+        console.error("Error fetching user email:", error);
       }
+    } catch (error) {
+      console.error("Error fetching token, email, and slug:", error);
+    } finally {
+      setLoading(false);
     }
-
-    fetchSlug();
-  }, [token, userEmail]); // Added dependencies
+  }
+  
+  useEffect(() => {
+    fetchTokenEmailAndSlug();
+  }, []);
 
   // Logout function
   const logout = () => {
-    localStorage.removeItem("user");
     setToken("");
-    setUserEmail("");
     setSlug("");
     session_logout();
   };

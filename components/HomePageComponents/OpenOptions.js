@@ -5,23 +5,33 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import NavItems2 from "./navItems";
-import { getAuthToken } from "@/actions/auth";
+import { getAuthToken, getUserEmail } from "@/actions/auth";
+import { getUserSlugByEmail } from "@/actions/prismaActions";
 import { logout } from "@/actions/auth";
 
 export default function OpenOptions() {
   const [isOpen, setIsOpen] = useState(false);
-  const [token,setToken] = useState(null)
+  const [token, setToken] = useState(null);
+  const [userSlug, setUserSlug] = useState(null);
   const pathname = usePathname();
 
-  async function getToken(){
-    const token = await getAuthToken()
-    setToken(token)
-  }
+  useEffect(() => {
+    // console.log("Component mounted or updated");
+    async function fetchTokenAndSlug() {
+      const token = await getAuthToken();
+      setToken(token);
 
-  useEffect( () => {
-    getToken();
-  },[])
-  
+      const { success, email, error } = await getUserEmail();
+      if (success) {
+        const slug = await getUserSlugByEmail(email);
+        setUserSlug(slug);
+      } else {
+        console.log("Error fetching user email:", error);
+      }
+    }
+
+    fetchTokenAndSlug();
+  }, []); // Empty dependency array ensures this runs only once
 
   const navItems = [
     { href: "/", label: "Home" },
@@ -58,7 +68,7 @@ export default function OpenOptions() {
     { href: "/mySpaces", label: "My Spaces" },
     { href: "/myTeams", label: "My Teams" },
     { href: "/myFriends", label: "My Friends" },
-    { href: "/profile/123", label: "Profile" },
+    { href: `/profile/${userSlug}`, label: "Profile" },
   ];
 
   return (
@@ -80,28 +90,6 @@ export default function OpenOptions() {
         }`}
         id="navbar-sticky"
       >
-        {/* <ul className="lg:hidden md:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-        {navItems.map((item) => {
-            let className = "block py-2 px-3 rounded-lg md:p-0 ";
-            if (
-              pathname === item.href ||
-              (item.href !== "/" && pathname.startsWith(item.href))
-            ) {
-              className +=
-                "bg-[#A78BFA] text-white md:bg-transparent md:text-[#A78BFA]";
-            } else {
-              className +=
-                "text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A78BFA] dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent";
-            }
-            return (
-              <li key={item.href}>
-                <Link href={item.href}>
-                  <div className={className}>{item.label}</div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul> */}
         <NavItems2 />
 
         {token ? (

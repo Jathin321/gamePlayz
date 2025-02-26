@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React from 'react';
 
-const MatchCard = ({ match }) => {
+const TournamentMatchCard = ({ match }) => {
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="p-6">
@@ -44,4 +44,4 @@ const MatchCard = ({ match }) => {
   );
 };
 
-export default MatchCard;
+export default TournamentMatchCard;

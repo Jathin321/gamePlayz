@@ -1,18 +1,61 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef } from "react";
+import { useRouter, useParams } from "next/navigation";
 import classes from "./style.module.css";
-import { Gamepad, Gamepad2, Calendar, Users, Ticket, Wallet, CalendarClock } from "lucide-react";
+import {
+  Gamepad,
+  Gamepad2,
+  Calendar,
+  Users,
+  Ticket,
+  Wallet,
+  CalendarClock,
+  Loader2,
+  Settings,
+  Plus,
+} from "lucide-react";
 import Announcements from "@/components/SharedComponents/announcements";
 import Idp from "@/components/SharedComponents/idp";
 import Home from "@/components/spaceComponents/home";
 import Tournaments from "@/components/spaceComponents/tournaments";
 import Scrims from "@/components/spaceComponents/scrims";
+import { getSpaceDetailsBySlug } from "@/actions/prismaActions";
+import { getUserId } from "@/actions/auth";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const ScrimDetails = () => {
   const scrollContainerRef = useRef(null);
   const router = useRouter();
+  const { slug } = useParams();
+  const path = usePathname();
+
+  const [activeTab, setActiveTab] = useState("Home");
+  const [spaceDetails, setSpaceDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    setLoading(true);
+    const fetchDetails = async () => {
+      try {
+        const userResponse = await getUserId();
+        if (userResponse.success) {
+          setUserId(userResponse.userId);
+        }
+
+        const details = await getSpaceDetailsBySlug(slug);
+        setSpaceDetails(details);
+      } catch (error) {
+        console.error("Error fetching details:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDetails();
+  }, [slug]);
 
   const handleRightScroll = () => {
     if (scrollContainerRef.current) {
@@ -21,7 +64,6 @@ const ScrimDetails = () => {
     }
   };
 
-  const [activeTab, setActiveTab] = useState("Home");
   const navigationBar = [
     "Home",
     "Tournaments",
@@ -30,47 +72,18 @@ const ScrimDetails = () => {
     "Live Chat",
   ];
 
-  const tourney_data = {
-    tournId: 1,
-    tournName: "Space Name",
-    tournPp: "1000",
-    regStart: "2024-12-01T10:00:00.000Z",
-    regEnd: "2024-12-05T18:00:00.000Z",
-    tournStart: "2024-12-10T13:52:57.294Z",
-    orgBy: "Gaming League",
-    tournType: "Knockout",
-    status: "Upcoming",
-    gameMode: "Solo",
-    description:
-      "Join us for an epic showdown with top gamers from around the world. Exciting prizes await the winners!",
-    totalSlots: 12,
-    slotsAvail: 9,
-    entryFee: 100,
-    roomId: "ABC123",
-    roomPassword: "secure123",
-    eventLink: "https://example.com/event",
-    liveLink: "https://example.com/live",
-    discordLink: "https://example.com/discord",
-    game: "Free Fire",
-  };
-
-  const FormatTime = (isoDate) => {
-    const date = new Date(isoDate);
-    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  };
-
   const renderContent = () => {
     switch (activeTab) {
       case "Home":
-        return <Home />;
+        return <Home slug={slug} />;
       case "Tournaments":
-        return <Tournaments/>;
+        return <Tournaments slug={slug} />;
       case "Scrims":
-        return <Scrims />;
+        return <Scrims slug={slug} />;
       case "Announcements":
-        return <Announcements/>;
+        return <Announcements />;
       case "IDP":
-        return <Idp/>;
+        return <Idp />;
       default:
         return <p className="text-white">Overview Content</p>;
     }
@@ -83,6 +96,23 @@ const ScrimDetails = () => {
       router.push("/");
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-white text-center flex">
+          <Loader2 className="w-12 h-12 animate-spin" />
+          <p className="px-2 mt-4 text-lg">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!spaceDetails) {
+    return <div className="text-white text-center mt-16">Space not found</div>;
+  }
+
+  const isAdmin = userId == spaceDetails.adminId;
 
   return (
     <div className="bg-gray-900 mt-16">
@@ -125,23 +155,34 @@ const ScrimDetails = () => {
           {/* Profile Picture */}
           <div className="w-full md:w-1/4 flex justify-center mb-3 md:mb-0">
             <img
-              src="https://th.bing.com/th/id/OIP.ZugpBU6RwS8ftzBQyaXuegHaJQ?w=159&h=199&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+              src={spaceDetails.profilePic || "null"}
               alt="Profile Picture"
-              className="w-64 h-64 rounded-full object-cover"
+              className="w-64 h-64 border border-violet-600 rounded-full object-cover"
             />
           </div>
 
           {/* Tournament Details */}
           <div className="w-full md:w-2/4 md:mb-0 text-white">
-            <h2 className="text-4xl">{tourney_data.tournName}</h2>
-            <h1 className="mt-3">225K members</h1>
+            <h2 className="text-4xl">{spaceDetails.spaceName}</h2>
+            <div className="flex pt-3 items-center gap-2 text-md text-gray-300">
+              <Users className="w-4 h-4" />
+              <h1>12200 members</h1>
+            </div>
           </div>
 
-          {/* Join Button */}
-          <div className="w-full md:w-1/4 flex justify-center">
+          {/* Join Button and Settings Button */}
+          <div className="w-full md:w-1/4 flex justify-center items-center gap-2">
             <button className="w-full md:w-3/4 bg-[#9875ff] text-white rounded-full px-4 py-2">
-              Join Space
+              {isAdmin == true ? "You are the Admin" : "Join Space"}
             </button>
+            {isAdmin && (
+              <Link
+                href={`${path}/settings`}
+                className="bg-gray-700 text-white rounded-full p-2"
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -151,32 +192,41 @@ const ScrimDetails = () => {
         {/* Profile Section */}
         <div className="flex items-center">
           {/* Profile Picture */}
-          <div className="w-1/4">
+          <div className="w-1/4 ml-2">
             <img
-              src="https://th.bing.com/th/id/OIP.ZugpBU6RwS8ftzBQyaXuegHaJQ?w=159&h=199&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+              src={spaceDetails.profilePic || "null"}
               alt="Profile Picture"
-              className="rounded-full w-20 h-20 object-cover"
+              className="rounded-full border border-solid w-20 h-20 object-cover"
             />
           </div>
 
           {/* Tournament Details */}
           <div className="w-3/4 text-white">
-            <p className="mb-1">Organizer Name</p>
-            <h2 className="text-lg font-semibold mb-1">
-              Winter Battle Season 1
+            <h2 className="text-2xl font-semibold mb-1">
+              {spaceDetails.spaceName}
             </h2>
-            <p className="text-sm mb-2">Starting - Ending</p>
-            <div className="bg-[#9875ff] text-white text-center rounded-full px-3 py-1 w-1/4">
-              Status
+            <div className="flex items-center gap-2 text-sm text-gray-400">
+              <Users className="w-4 h-4" />
+              <span>12200 members</span>
             </div>
           </div>
         </div>
 
         {/* Join Tournament Button */}
-        <div className="text-center mt-3">
-          <button className="bg-[#9875ff] text-white rounded-full w-[95%] py-3">
-            Join
-          </button>
+        <div className="text-center mt-3 flex flex-col items-center gap-3">
+          <div className="flex w-full gap-3">
+            <button className="bg-[#9875ff] w-[70%] text-white rounded-full flex-1 py-3">
+              {isAdmin ? "You Are The Admin" : "Join"}
+            </button>
+            {isAdmin && (
+              <Link
+                href={`${path}/settings`}
+                className="bg-gray-700 w-[15%] text-white rounded-full p-2 flex items-center justify-center"
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 

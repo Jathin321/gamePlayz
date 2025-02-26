@@ -1,20 +1,68 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { AlertTriangle, Loader2, Settings } from "lucide-react";
 import classes from "./style.module.css";
-import { Gamepad, Gamepad2, Calendar, Users, Ticket, Wallet, CalendarClock } from "lucide-react";
+import {
+  Gamepad,
+  Gamepad2,
+  Calendar,
+  Users,
+  Ticket,
+  Wallet,
+  CalendarClock,
+} from "lucide-react";
 import RegisteredTeams from "@/components/SharedComponents/registeredTeams";
 import PointsTable from "@/components/SharedComponents/pointsTable";
 import Announcements from "@/components/SharedComponents/announcements";
 import Idp from "@/components/SharedComponents/idp";
 import ScrimDetailsComponent from "@/components/ScrimComponents/scrimDetails";
 import LiveChat from "@/components/SharedComponents/liveChat";
+import ScrimMatches from "@/components/ScrimComponents/matches";
+import { getScrimDetailsBySlug } from "@/actions/prismaActions";
 
 const ScrimDetails = () => {
   const scrollContainerRef = useRef(null);
   const router = useRouter();
+  const { slug } = useParams();
+  const [scrim, setScrim] = useState(null);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("Overview");
+
+  useEffect(() => {
+    const fetchScrimDetails = async () => {
+      const { success, scrim, error } = await getScrimDetailsBySlug(slug);
+      if (success) {
+        setScrim(scrim);
+      } else {
+        setError(error);
+      }
+    };
+
+    fetchScrimDetails();
+  }, [slug]);
+
+  if (error) {
+    return <div className="flex items-center justify-center h-screen w-screen bg-gray-900">
+    <div className="flex flex-col items-center space-y-4">
+      <AlertTriangle className="h-12 w-12 text-red-500" />
+      <p className="text-gray-400 text-lg font-medium">
+        Error fetching scrim details: {error}
+      </p>
+    </div>
+  </div>
+  }
+
+  if (!scrim) {
+    return <div className="flex items-center justify-center h-screen w-screen bg-gray-900">
+    <div className="flex flex-col items-center space-y-4">
+      <Loader2 className="h-12 w-12 text-violet-500 animate-spin" />
+      <p className="text-gray-500 text-lg font-medium">Loading...</p>
+    </div>
+  </div>
+  }
 
   const handleRightScroll = () => {
     if (scrollContainerRef.current) {
@@ -23,39 +71,15 @@ const ScrimDetails = () => {
     }
   };
 
-  const [activeTab, setActiveTab] = useState("Overview");
   const navigationBar = [
     "Overview",
     "Teams",
+    "Matches",
     "PointsTable",
     "Live Chat",
     "Announcements",
     "IDP",
   ];
-
-  const tourney_data = {
-    tournId: 1,
-    tournName: "Winter Battle Season 1",
-    tournPp: "1000",
-    regStart: "2024-12-01T10:00:00.000Z",
-    regEnd: "2024-12-05T18:00:00.000Z",
-    tournStart: "2024-12-10T13:52:57.294Z",
-    orgBy: "Gaming League",
-    tournType: "Knockout",
-    status: "Upcoming",
-    gameMode: "Solo",
-    description:
-      "Join us for an epic showdown with top gamers from around the world. Exciting prizes await the winners!",
-    totalSlots: 12,
-    slotsAvail: 9,
-    entryFee: 100,
-    roomId: "ABC123",
-    roomPassword: "secure123",
-    eventLink: "https://example.com/event",
-    liveLink: "https://example.com/live",
-    discordLink: "https://example.com/discord",
-    game: "Free Fire",
-  };
 
   const FormatTime = (isoDate) => {
     const date = new Date(isoDate);
@@ -65,17 +89,19 @@ const ScrimDetails = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "Overview":
-        return <ScrimDetailsComponent />;
+        return <ScrimDetailsComponent scrim={scrim} />;
+      case "Matches":
+        return <ScrimMatches matches={scrim.matches} />;
       case "PointsTable":
-        return <PointsTable/>;
+        return <PointsTable />;
       case "Teams":
         return <RegisteredTeams />;
       case "Live Chat":
         return <LiveChat />;
       case "Announcements":
-        return <Announcements/>;
+        return <Announcements />;
       case "IDP":
-        return <Idp/>;
+        return <Idp />;
       default:
         return <p className="text-white">Overview Content</p>;
     }
@@ -130,7 +156,7 @@ const ScrimDetails = () => {
           {/* Profile Picture */}
           <div className="w-full md:w-1/4 flex justify-center mb-3 md:mb-0">
             <img
-              src="https://th.bing.com/th/id/OIP.ZugpBU6RwS8ftzBQyaXuegHaJQ?w=159&h=199&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+              src="null"
               alt="Profile Picture"
               className="w-64 h-64 rounded-full object-cover"
             />
@@ -138,34 +164,39 @@ const ScrimDetails = () => {
 
           {/* Tournament Details */}
           <div className="w-full md:w-2/4 md:mb-0 text-white">
-            <p className="text-lg md:mt-5 py-2">{tourney_data.orgBy}</p>
-            <h2 className="text-4xl">{tourney_data.tournName}</h2>
+            <p className="text-lg md:mt-5 py-2">{scrim.space.spaceName}</p>
+            <h2 className="text-4xl">{scrim.name}</h2>
             <p className="py-2">
-              {FormatTime(tourney_data.regStart)} -{" "}
-              {FormatTime(tourney_data.regEnd)}
+              {FormatTime(scrim.startDate)} - {FormatTime(scrim.endDate)}
             </p>
             <button className="bg-[#9875ff] text-white rounded-full px-4 py-2 mt-2">
-              {tourney_data.status}
+              {scrim.status}
             </button>
           </div>
 
-          {/* Join Button */}
-          <div className="w-full md:w-1/4 flex justify-center">
-            <Link href="some-scrim/register" className="text-center w-full md:w-3/4 bg-[#9875ff] text-white rounded-full px-4 py-2">
+          {/* Join and Settings Buttons */}
+          <div className="w-full md:w-1/4 flex justify-center space-x-2">
+            <Link
+              href={`/scrims/${scrim.slug}/register`}
+              className="text-center w-full md:w-3/4 bg-[#9875ff] text-white rounded-full px-4 py-2"
+            >
               Join Scrim
+            </Link>
+            <Link href={`/scrims/${slug}/control-panel`} className="bg-gray-700 text-white rounded-full w-12 h-12 flex items-center justify-center">
+              <Settings className="w-5 h-5" />
             </Link>
           </div>
         </div>
       </div>
 
-      {/*Mobile Details */}
+      {/* Mobile Details */}
       <div className="block md:hidden lg:hidden">
         {/* Profile Section */}
         <div className="flex items-center">
           {/* Profile Picture */}
           <div className="w-1/4">
             <img
-              src="https://th.bing.com/th/id/OIP.ZugpBU6RwS8ftzBQyaXuegHaJQ?w=159&h=199&c=7&r=0&o=5&dpr=1.3&pid=1.7"
+              src="null"
               alt="Profile Picture"
               className="rounded-full w-20 h-20 object-cover"
             />
@@ -173,21 +204,27 @@ const ScrimDetails = () => {
 
           {/* Tournament Details */}
           <div className="w-3/4 text-white">
-            <p className="mb-1">Organizer Name</p>
-            <h2 className="text-lg font-semibold mb-1">
-              Winter Battle Season 1
-            </h2>
-            <p className="text-sm mb-2">Starting - Ending</p>
-            <div className="bg-[#9875ff] text-white text-center rounded-full px-3 py-1 w-1/4">
-              Status
+            <p className="mb-1">{scrim.space.spaceName}</p>
+            <h2 className="text-lg font-semibold mb-1">{scrim.name}</h2>
+            <p className="text-sm mb-2">
+              {FormatTime(scrim.startDate)} - {FormatTime(scrim.endDate)}
+            </p>
+            <div className="bg-[#9875ff] text-white text-center rounded-full px-2 py-1 w-1/3">
+              {scrim.status}
             </div>
           </div>
         </div>
 
-        {/* Join Tournament Button */}
-        <div className="text-center mt-3">
-          <Link href="some-scrim/register" className="bg-[#9875ff] text-white rounded-full w-[95%] py-3">
+        {/* Join and Settings Buttons */}
+        <div className="flex justify-center mt-3 space-x-2">
+          <Link
+            href={`/scrims/${scrim.slug}/register`}
+            className="bg-[#9875ff] text-white rounded-full w-[80%] max-w-xs py-3 block text-center"
+          >
             Join
+          </Link>
+          <Link href={`/scrims/${slug}/control-panel`} className="bg-gray-700 text-white rounded-full w-12 h-12 flex items-center justify-center">
+            <Settings className="w-5 h-5" />
           </Link>
         </div>
       </div>

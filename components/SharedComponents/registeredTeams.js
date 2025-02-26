@@ -35,7 +35,7 @@ export default function RegisteredTeams() {
             >
               <div className="flex items-center">
                 <img
-                  src={team.icon}
+                  src={team.icon || "null"}
                   alt="Team Icon"
                   className="rounded-full w-10 h-10 mr-3"
                 />

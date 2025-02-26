@@ -192,7 +192,7 @@ async function Profile({ params }) {
                       <h1 className="text-2xl font-bold">
                         {curr_user.username}
                       </h1>
-                      <EditButton email={curr_user.email} />
+                      <EditButton slug={slug} />
                       <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
                         <Share2 className="w-4 h-4 text-gray-400" />
                       </button>

@@ -2,46 +2,69 @@
 import { useState } from "react";
 import classes from "./style.module.css";
 import { supabase } from "@/util/supabase";
+import { checkUserExists } from "@/actions/prismaActions";
 
 const SignUp = () => {
-  const [username,setusername] = useState("")
-  const [email,setEmail] = useState("")
-  const [password,setpassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [msg, setMsg] = useState("")
-  const [error,setError]= useState("");
-  const [loading, setLoading] = useState(false)
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [msg, setMsg] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     // Validation
+    const usernameRegex = /^[a-zA-Z0-9._]+$/;
+
     if (!username) {
       setError("Username is required.");
       setLoading(false);
       return;
     }
-  
+
+    if (!usernameRegex.test(username)) {
+      setError("Username can only contain letters, numbers, underscores, and periods.");
+      setLoading(false);
+      return;
+    }
+
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setError("Please enter a valid email.");
       setLoading(false);
       return;
     }
-  
+
     if (!password || password.length < 6) {
       setError("Password should be at least 6 characters.");
       setLoading(false);
       return;
     }
-  
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       setLoading(false);
       return;
     }
-  
+
+    // Check if user already exists
+    const { exists, error: checkError } = await checkUserExists(username, email);
+    if (checkError) {
+      setError(checkError);
+      setLoading(false);
+      return;
+    }
+
+    if (exists) {
+      setError("A user with this username or email already exists.");
+      setLoading(false);
+      return;
+    }
+
     // Signup request to Supabase
     const { data, error } = await supabase.auth.signUp({
       email: email,
@@ -50,7 +73,7 @@ const SignUp = () => {
         data: { username },
       },
     });
-  
+
     if (error) {
       setError(error.message);
       console.log(error.message);
@@ -58,15 +81,15 @@ const SignUp = () => {
       setMsg("Signup successful! Check your email for verification.");
       console.log("check your email for verification");
     }
-  
+
     setLoading(false);
   };
-  
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className={classes.formContainer}>
         <p className={classes.title}>Sign Up</p>
-  
+
         <form className={classes.form} onSubmit={handleSignup}>
           <div className={classes.inputGroup}>
             <label htmlFor="username">Username</label>
@@ -75,7 +98,7 @@ const SignUp = () => {
               name="username"
               id="username"
               value={username}
-              onChange={(e) => setusername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
             />
           </div>
           <div className={classes.inputGroup}>
@@ -95,7 +118,7 @@ const SignUp = () => {
               name="password"
               id="password"
               value={password}
-              onChange={(e) => setpassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className={classes.inputGroup}>
@@ -108,22 +131,22 @@ const SignUp = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
-  
+
           {/* Show error message */}
           {error && <div className="text-red-500 m-[14px]">{error}</div>}
           {msg && <div className="text-green-500 m-[14px]">{msg}</div>}
-  
+
           <button className={classes.sign} type="submit" disabled={loading}>
             {loading ? "Signing Up..." : "Register"}
           </button>
         </form>
-  
+
         <div className={classes.socialmessage}>
           <div className={classes.line} />
           <p className={classes.message}>Login with social accounts</p>
           <div className={classes.line} />
         </div>
-  
+
         <div className={classes.socialicons}>
           <button aria-label="Log in with Google" className={classes.icon}>
             <svg
@@ -156,7 +179,7 @@ const SignUp = () => {
       </div>
     </div>
   );
-  
+
 };
 
 export default SignUp;

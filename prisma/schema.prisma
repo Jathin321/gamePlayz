@@ -14,26 +14,31 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(cuid()) // Assuming you want a cuid for id
-  slug        String?   @unique
-  fullname    String?
-  username    String   @unique
-  email       String   @unique
-  phone       String?  // Phone number can be optional
-  dateOfBirth DateTime? // Date of birth can be optional
-  profilePic  String?  // Profile picture can be optional
-  bio         String?  // Bio can be optional
-  location    String?  // Location can be optional
-  motherTongue String?  // Mother tongue can be optional
-  mostActive  MostActive? // Using an enum
-  gender      Gender?    // Using an enum
-  createdAt   DateTime? @default(now())
-  updatedAt   DateTime? @updatedAt
+  id           String       @id @unique
+  slug         String?      @unique
+  fullname     String?
+  username     String       @unique
+  email        String       @unique
+  phone        String? // Phone number can be optional
+  dateOfBirth  DateTime? // Date of birth can be optional
+  profilePic   String? // Profile picture can be optional
+  bio          String? // Bio can be optional
+  location     String? // Location can be optional
+  motherTongue String? // Mother tongue can be optional
+  mostActive   MostActive? // Using an enum
+  gender       Gender? // Using an enum
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  Spaces       Space[]
+  Scrim        Scrim[]
+  Teams        Team[]
+  teamMembers  TeamMember[]
+  sentRequests TeamJoinRequest[] @relation("Sender")
+  receivedRequests TeamJoinRequest[] @relation("Receiver")
 
   @@index([slug]) // Indexing for slug
   @@index([username]) // Indexing for username
-  @@index([email])   // Indexing for email
-  Spaces Space[]
+  @@index([email]) // Indexing for email
 }
 
 enum MostActive {
@@ -49,16 +54,135 @@ enum Gender {
 }
 
 model Space {
-  id          String   @id @default(cuid()) @map("_id")
-  slug        String   @unique
-  spaceName   String   @map("space_name")
-  desc        String   @db.Text
-  createdAt   DateTime @default(now()) @map("createdAt")
-  updatedAt   DateTime @updatedAt @map("updatedAt")
-  profilePic  String   @map("profile_pic")
-  banner      String   
-  admin       User     @relation(fields : [adminId], references: [id])
-  adminId     String   
-  
+  id         String   @id @default(cuid()) @map("id")
+  slug       String   @unique
+  spaceName  String   @map("space_name")
+  desc       String   @db.Text
+  createdAt  DateTime @default(now()) @map("createdAt")
+  updatedAt  DateTime @updatedAt @map("updatedAt")
+  profilePic String?  @map("profile_pic")
+  banner     String?
+  admin      User     @relation(fields: [adminId], references: [id])
+  adminId    String
+  Scrim      Scrim[]
+
   @@map("spaces")
+}
+
+model Game {
+  id         String  @id @default(cuid())
+  slug       String  @unique
+  name       String
+  type       String?
+  profilePic String? @map("profile_pic")
+  banner     String? 
+  Scrim      Scrim[]
+
+  @@map("games")
+}
+
+enum ScrimStatus {
+  upcoming
+  registering
+  matchmaking
+  completed
+  cancled
+}
+
+model Scrim {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  game        Game     @relation(fields: [gameId], references: [id])
+  space       Space    @relation(fields: [spaceId], references: [id])
+  admin       User     @relation(fields: [adminId], references: [id])
+  banner      String?
+  startDate   DateTime @map("start_date")
+  endDate     DateTime @map("end_date")
+  description String   @db.Text
+  rules       String[]
+  teamSize    Int      @map("team_size")
+  prizePool   Int      @map("prize_pool")
+  entryFee    Int      @map("entry_fee")
+  slots       Int
+  status      ScrimStatus
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  matchesCount Int    @default(1) @map("matches_count")
+
+  gameId      String
+  spaceId     String
+  adminId     String
+
+  matches     ScrimMatch[]
+
+  @@map("scrims")
+}
+
+model ScrimMatch {
+  id          String   @id @default(cuid())
+  scrim       Scrim    @relation(fields: [scrimId], references: [id])
+  scrimId     String
+  matchNumber Int      @map("match_number") @default(1)
+  startDate   DateTime? @map("start_date") 
+  roomId      String?   @map("room_id")
+  password    String?
+  results     Json?     @db.Json
+
+  @@map("scrim_matches")
+}
+
+model Team {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  owner       User         @relation(fields: [ownerId], references: [id])
+  ownerId     String
+  desc        String       @db.Text
+  profilePic  String?      @map("profile_pic")
+  banner      String?
+  createdAt   DateTime     @default(now()) @map("createdAt")
+  updatedAt   DateTime     @updatedAt @map("updatedAt")
+  members     TeamMember[]
+  joinRequests TeamJoinRequest[]
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id        String   @id @default(cuid()) @map("_id")
+  team      Team     @relation(fields: [teamId], references: [id])
+  teamId    String   @map("team_id")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @map("user_id")
+  role      Role     @default(player)
+  isAdmin   Boolean  @default(false) @map("is_admin")
+  joinedAt  DateTime @default(now()) @map("joinedAt")
+
+  @@map("team_members")
+}
+
+enum Role {
+  player
+  coach
+  substitute
+}
+
+model TeamJoinRequest {
+  id        String   @id @default(cuid()) @map("_id")
+  sender     User       @relation("Sender", fields: [senderId], references: [id])
+  senderId   String     @map("sender_id")
+  receiver   User?       @relation("Receiver", fields: [receiverId], references: [id])
+  receiverId String?     @map("receiver_id")
+  team      Team     @relation(fields: [teamId], references: [id])
+  teamId    String   @map("team_id")
+  status    JoinStatus @default(pending)
+
+  @@map("team_join_requests")
+}
+
+enum JoinStatus {
+  pending
+  accepted
+  declined
 }

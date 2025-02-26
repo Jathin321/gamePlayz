@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-// import Link from 'next/link';
+import { useState, useEffect } from "react";
 import {
   Search,
   Calendar,
@@ -11,10 +10,30 @@ import {
   TrendingUp,
 } from "lucide-react";
 import ScrimsCard from "@/components/ScrimComponents/scrimsCard";
+import { getAllScrims } from "@/actions/prismaActions";
 
 function Scrims() {
   const [activeTab, setActiveTab] = useState("live");
   const [searchQuery, setSearchQuery] = useState("");
+  const [scrims, setScrims] = useState([]);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchScrims = async () => {
+      const { success, scrims, error } = await getAllScrims();
+      if (success) {
+        setScrims(scrims);
+      } else {
+        setError(error);
+      }
+    };
+
+    fetchScrims();
+  }, []);
+
+  if (error) {
+    return <div>Error fetching scrims: {error}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
@@ -75,7 +94,18 @@ function Scrims() {
 
         {/* Tournament Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {/* Tournament Card 1
+          {scrims.map((scrim) => (
+            <ScrimsCard key={scrim.id} scrim={scrim} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Scrims;
+
+{/* Tournament Card 1
           <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition duration-300">
             <div className="relative">
               <img
@@ -222,20 +252,3 @@ function Scrims() {
               </button>
             </div>
           </div> */}
-
-          <ScrimsCard />
-          <ScrimsCard />
-          <ScrimsCard />
-          <ScrimsCard />
-
-          <ScrimsCard />
-          <ScrimsCard />
-          <ScrimsCard />
-          <ScrimsCard />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default Scrims;

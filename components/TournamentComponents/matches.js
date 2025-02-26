@@ -1,4 +1,4 @@
-import MatchCard from "./matchCard";
+import TournamentMatchCard from "./tournamentMatchCard";
 
 export default function Matches() {
     const matches = [
@@ -54,7 +54,7 @@ export default function Matches() {
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {matches.map((match) => (
-          <MatchCard key={match.id} match={match} />
+          <TournamentMatchCard key={match.id} match={match} />
         ))}
       </div>
     </div>

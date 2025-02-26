@@ -5,7 +5,7 @@ import { redirect, useSearchParams } from "next/navigation";
 import { supabase } from "@/util/supabase";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
-import { login } from "@/actions/auth";
+import { createUser } from "@/actions/prismaActions";
 
 export default function VerifyAccount() {
   const searchParams = useSearchParams();
@@ -73,20 +73,17 @@ export default function VerifyAccount() {
           return;
         }
 
-        const response = await fetch("/api/create-prisma-user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: parsedData.username || userData.user.id,
-            email: userData.user.email,
-            slug: userData.user.id,
-          }),
-        });
+        const userProfile = {
+          userId: userData.user.id, // Include userId in userProfile
+          username: parsedData.username || userData.user.id,
+          email: userData.user.email,
+          slug: userData.user.id,
+        };
+
+        const response = await createUser(userProfile);
         console.log("response : ", response);
 
-        if (response.ok) {
+        if (response.success) {
           setStatus("success");
         } else {
           setStatus("error");
