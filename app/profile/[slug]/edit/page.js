@@ -94,7 +94,7 @@ function EditProfile() {
       try {
         const { success, email, error } = await getUserEmail();
         if (!success) {
-          console.error("Error fetching user email:", error);
+          console.log("Error fetching user email:", error);
           return router.back();
         }
 
@@ -118,7 +118,7 @@ function EditProfile() {
         setMostActive(userData.mostActive || "");
         setSlug(userData.slug || "");
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.log("Error fetching user:", error);
       }
     };
     fetchUser();
@@ -424,6 +424,7 @@ function EditProfile() {
             <button
               type="button"
               className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition-colors"
+              onClick={() => router.back()}
             >
               Cancel
             </button>

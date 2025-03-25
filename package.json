@@ -11,6 +11,7 @@
   "dependencies": {
     "@prisma/client": "^6.3.1",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
+    "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.48.1",
     "dompurify": "^3.2.4",
     "lucide-react": "^0.474.0",

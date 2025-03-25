@@ -30,7 +30,7 @@ function EditButton({ slug }) {
           const fetchedSlug = await getUserSlugByEmail(email);
           setCurrentUserSlug(fetchedSlug);
         } else {
-          console.error("Error fetching user email:", error);
+          console.log("Error fetching user email:", error);
           setCurrentUserSlug("No_User");
         }
       }

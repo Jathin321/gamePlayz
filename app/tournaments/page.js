@@ -1,16 +1,18 @@
 "use client";
 import { useState } from "react";
-// import Link from 'next/link';
+import Link from 'next/link';
 import {
   Search,
   Calendar,
   Users2,
-  DollarSign,
-  Trophy,
-  ArrowRight,
   TrendingUp,
+  Trophy,
+  Clock,
+  ArrowRight,
+  AlertTriangle,
+  Swords,
+  Bell
 } from "lucide-react";
-import TournamentCard from "@/components/TournamentComponents/tournamentCard";
 
 function Tournaments() {
   const [activeTab, setActiveTab] = useState("live");
@@ -33,6 +35,7 @@ function Tournaments() {
               placeholder="Search tournaments by name, game, or organizer..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              disabled
             />
           </div>
 
@@ -64,6 +67,7 @@ function Tournaments() {
                       ? "bg-purple-600 text-white"
                       : "text-gray-200 hover:text-white hover:bg-gray-700/50"
                   }`}
+                  disabled
                 >
                   {tab.icon}
                   <span>{tab.label}</span>
@@ -73,165 +77,62 @@ function Tournaments() {
           </div>
         </div>
 
-        {/* Tournament Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {/* Tournament Card 1
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition duration-300">
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80"
-                alt="Valorant Tournament"
-                className="w-full h-40 object-cover"
-              />
-              <div className="absolute top-4 right-4">
-                <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
-                  Live
-                </span>
+        {/* Coming Soon Message */}
+        <div className="flex flex-col items-center justify-center py-6">
+          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-8 max-w-2xl mx-auto text-center border border-gray-700/50">
+            <div className="bg-purple-500/10 rounded-full p-4 inline-block mb-6">
+              <Trophy className="h-12 w-12 text-purple-400" />
+            </div>
+            
+            <h2 className="text-3xl font-bold text-white mb-4">Tournaments Coming Soon</h2>
+            
+            <p className="text-gray-300 mb-6">
+              We're working hard to bring you competitive gaming tournaments. 
+              Soon you'll be able to join tournaments, compete with players around the 
+              world, and win exciting prizes!
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <div className="bg-gray-700/30 p-4 rounded-lg">
+                <Calendar className="h-6 w-6 text-purple-400 mx-auto mb-2" />
+                <h3 className="font-semibold text-white">Regular Events</h3>
+                <p className="text-sm text-gray-300">Weekly and monthly tournaments</p>
+              </div>
+              
+              <div className="bg-gray-700/30 p-4 rounded-lg">
+                <Users2 className="h-6 w-6 text-purple-400 mx-auto mb-2" />
+                <h3 className="font-semibold text-white">Team & Solo</h3>
+                <p className="text-sm text-gray-300">Compete individually or with your team</p>
+              </div>
+              
+              <div className="bg-gray-700/30 p-4 rounded-lg">
+                <Trophy className="h-6 w-6 text-purple-400 mx-auto mb-2" />
+                <h3 className="font-semibold text-white">Prize Pools</h3>
+                <p className="text-sm text-gray-300">Win rewards and recognition</p>
               </div>
             </div>
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-white mb-2">Valorant Champions Tour</h3>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>March 15, 2024 - 18:00 UTC</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Users2 className="w-4 h-4 mr-2" />
-                  <span>32 Teams (16 spots left)</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <DollarSign className="w-4 h-4 mr-2" />
-                  <span>$25,000 Prize Pool</span>
-                </div>
-              </div>
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition flex items-center justify-center space-x-2">
-                <span>View Details</span>
-                <ArrowRight className="w-4 h-4" />
+            
+            <div className="flex items-center justify-center flex-col gap-2">
+              <button className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white rounded-full px-5 py-2 transition-colors">
+                <Bell className="h-4 w-4" />
+                <span>Notify me when tournaments launch</span>
               </button>
+              
+              <p className="text-sm text-gray-400 mt-6">
+                <AlertTriangle className="h-4 w-4 inline mr-1" />
+                Want to practice with other teams while you wait?
+              </p>
+              
+              <Link 
+                href="/scrims" 
+                className="mt-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-8 py-3 rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-purple-500/20"
+              >
+                <Swords className="h-5 w-5" />
+                <span>Check out Scrims</span>
+                <ArrowRight className="h-5 w-5" />
+              </Link>
             </div>
           </div>
-
-          Tournament Card 2
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition duration-300">
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80"
-                alt="CS2 Tournament"
-                className="w-full h-40 object-cover"
-              />
-              <div className="absolute top-4 right-4">
-                <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
-                  Registering
-                </span>
-              </div>
-            </div>
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-white mb-2">CS2 Pro League Season 6</h3>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>March 20, 2024 - 20:00 UTC</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Users2 className="w-4 h-4 mr-2" />
-                  <span>64 Teams (8 spots left)</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <DollarSign className="w-4 h-4 mr-2" />
-                  <span>$35,000 Prize Pool</span>
-                </div>
-              </div>
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition flex items-center justify-center space-x-2">
-                <span>View Details</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          Tournament Card 3
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition duration-300">
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80"
-                alt="Rocket League Tournament"
-                className="w-full h-40 object-cover"
-              />
-              <div className="absolute top-4 right-4">
-                <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
-                  Upcoming
-                </span>
-              </div>
-            </div>
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-white mb-2">Rocket League Masters</h3>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>March 25, 2024 - 19:00 UTC</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Users2 className="w-4 h-4 mr-2" />
-                  <span>48 Teams (4 spots left)</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <DollarSign className="w-4 h-4 mr-2" />
-                  <span>$20,000 Prize Pool</span>
-                </div>
-              </div>
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition flex items-center justify-center space-x-2">
-                <span>View Details</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          Tournament Card 4
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition duration-300">
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80"
-                alt="Dota 2 Tournament"
-                className="w-full h-40 object-cover"
-              />
-              <div className="absolute top-4 right-4">
-                <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
-                  Live
-                </span>
-              </div>
-            </div>
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-white mb-2">Dota 2 Championship</h3>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>March 18, 2024 - 16:00 UTC</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Users2 className="w-4 h-4 mr-2" />
-                  <span>16 Teams (Full)</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <DollarSign className="w-4 h-4 mr-2" />
-                  <span>$45,000 Prize Pool</span>
-                </div>
-              </div>
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition flex items-center justify-center space-x-2">
-                <span>View Details</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div> */}
-
-          <TournamentCard />
-          <TournamentCard />
-          <TournamentCard />
-          <TournamentCard />
-
-          <TournamentCard />
-          <TournamentCard />
-          <TournamentCard />
-          <TournamentCard />
         </div>
       </div>
     </div>

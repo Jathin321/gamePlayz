@@ -1,9 +1,17 @@
-import { Users } from 'lucide-react';
+import { Users } from "lucide-react";
 
 function TeamSettings({ formData, onUpdate }) {
-  const handleTeamSizeChange = (e) => {
-    const value = e.target.value;
-    onUpdate({ teamSize: value });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    // Use parseInt for numerical fields to ensure proper type conversion
+    if (name === "slots" || name === "teamSize") {
+      onUpdate({ [name]: value }); // Pass the raw value as string, we'll parse it later
+    } else {
+      onUpdate({ [name]: value });
+    }
+
+    // For debugging - remove after fixing
+    console.log(`Updated ${name} to:`, value);
   };
 
   const handleEntryFeeChange = (e) => {
@@ -14,54 +22,55 @@ function TeamSettings({ formData, onUpdate }) {
   return (
     <div className="bg-gray-800 rounded-lg p-6">
       <h2 className="text-xl font-semibold mb-6">Team Settings</h2>
-      
+
       <div className="space-y-6">
         {/* Team Size */}
-        <div>
-          <label htmlFor="teamSize" className="block text-sm font-medium text-gray-400 mb-2">
-            Players per Team
-          </label>
-          <div className="relative">
-            <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Team Size Input */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Team Size
+            </label>
             <input
               type="number"
-              id="teamSize"
+              name="teamSize"
+              value={formData.teamSize}
+              onChange={handleInputChange}
               min="1"
               max="10"
-              value={formData.teamSize}
-              onChange={handleTeamSizeChange}
-              className="w-full bg-gray-700 text-white rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full bg-gray-700 border border-gray-600 rounded-md px-4 py-2 text-white"
             />
+            <p className="text-xs text-gray-400 mt-1">
+              How many players per team
+            </p>
           </div>
-          <p className="mt-1 text-sm text-gray-400">
-            Number of players required in each team
-          </p>
-        </div>
 
-        {/* Tournament Slots */}
-        <div>
-          <label htmlFor="slots" className="block text-sm font-medium text-gray-400 mb-2">
-            Tournament Slots
-          </label>
-          <select
-            id="slots"
-            value={formData.slots}
-            onChange={(e) => onUpdate({ slots: e.target.value })}
-            className="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="8">8 Teams</option>
-            <option value="16">16 Teams</option>
-            <option value="32">32 Teams</option>
-            <option value="64">64 Teams</option>
-          </select>
-          <p className="mt-1 text-sm text-gray-400">
-            Maximum number of teams that can participate
-          </p>
+          {/* Slots Input - This is where the fix needs to be applied */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Number of Slots
+            </label>
+            <input
+              type="number"
+              name="slots"
+              value={formData.slots}
+              onChange={handleInputChange}
+              min="2"
+              max="32"
+              className="w-full bg-gray-700 border border-gray-600 rounded-md px-4 py-2 text-white"
+            />
+            <p className="text-xs text-gray-400 mt-1">
+              Total number of teams that can participate
+            </p>
+          </div>
         </div>
 
         {/* Entry Fee */}
         <div>
-          <label htmlFor="entryFee" className="block text-sm font-medium text-gray-400 mb-2">
+          <label
+            htmlFor="entryFee"
+            className="block text-sm font-medium text-gray-400 mb-2"
+          >
             Entry Fee (USD)
           </label>
           <input
@@ -73,9 +82,7 @@ function TeamSettings({ formData, onUpdate }) {
             onChange={handleEntryFeeChange}
             className="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
           />
-          <p className="mt-1 text-sm text-gray-400">
-            Set to 0 for free entry
-          </p>
+          <p className="mt-1 text-sm text-gray-400">Set to 0 for free entry</p>
         </div>
       </div>
     </div>

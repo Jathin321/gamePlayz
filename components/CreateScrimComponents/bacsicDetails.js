@@ -11,7 +11,7 @@ function BasicDetails({ formData, onUpdate }) {
       if (response.success) {
         setGames(response.games);
       } else {
-        console.error('Error fetching games:', response.error);
+        console.log('Error fetching games:', response.error);
       }
     };
 

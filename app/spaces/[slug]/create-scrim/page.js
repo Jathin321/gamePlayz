@@ -64,7 +64,14 @@ function CreateTournament() {
   }, [slug]);
 
   const handleUpdateForm = (updates) => {
-    setFormData((prev) => ({ ...prev, ...updates }));
+    // Add console log for debugging
+    console.log("Updating form with:", updates);
+    
+    setFormData((prev) => {
+      const newData = { ...prev, ...updates };
+      console.log("New form data:", newData);
+      return newData;
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -85,7 +92,7 @@ function CreateTournament() {
       ...formData,
       teamSize: isNaN(teamSize) ? 1 : teamSize,
       entryFee: isNaN(entryFee) ? 0 : entryFee,
-      slots: isNaN(slots) ? 16 : slots,
+      slots: isNaN(slots) ? 12 : slots,
       prizePool: isNaN(prizePool) ? 0 : prizePool,
       matchesCount: isNaN(matchesCount) ? 0 : matchesCount,
       spaceId: spaceDetails.id,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Camera, Save } from "lucide-react";
+import { Camera, Save, CheckCircle2 } from "lucide-react"; // Add CheckCircle2 import
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { getTeamDetailsBySlug, updateTeamDetails } from "@/actions/prismaActions";
@@ -14,7 +14,7 @@ function TeamSettings() {
   const [banner, setBanner] = useState("");
 
   const [initialData, setInitialData] = useState({});
-  const [success, setSuccess] = useState("");
+  const [success, setSuccess] = useState(false); // Change to boolean instead of string
   const [error, setError] = useState("");
 
   const router = useRouter();
@@ -48,7 +48,7 @@ function TeamSettings() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
+    setSuccess(false);
 
     const updatedData = {};
     if (slug !== initialData.slug) updatedData.slug = slug;
@@ -64,11 +64,31 @@ function TeamSettings() {
 
     const result = await updateTeamDetails(teamSlug, updatedData);
     if (result.success) {
-      setSuccess("Team details updated successfully");
+      setSuccess(true); // Set boolean instead of string
     } else {
       setError(result.error);
     }
   };
+
+  // Add success screen return
+  if (success) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6">
+        <div className="flex flex-col items-center space-y-4 bg-purple-800 rounded-lg p-8 shadow-lg">
+          <CheckCircle2 className="h-24 w-24 text-white" />
+          <p className="text-2xl font-semibold text-white text-center">
+            Team details updated successfully!
+          </p>
+          <button
+            onClick={() => router.push(`/teams/${slug}`)}
+            className="mt-6 px-6 py-3 bg-white text-violet-700 rounded-lg font-semibold hover:bg-violet-100 transition duration-300"
+          >
+            Go to Team
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen mt-12 bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white p-8">
@@ -160,7 +180,6 @@ function TeamSettings() {
             </div>
           </div>
 
-          {success && <div className="text-green-500 m-[14px]">{success}</div>}
           {error && <div className="text-red-500 m-[14px]">{error}</div>}
 
           {/* Action Buttons */}

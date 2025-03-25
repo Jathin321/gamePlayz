@@ -16,6 +16,7 @@ const TeamJoinRequests = ({ teamId }) => {
       } else {
         setError(result.error);
       }
+      // console.log(result.joinRequests[0])
       setLoading(false);
     };
 

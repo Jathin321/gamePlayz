@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import NavItems2 from "./navItems";
 import { getAuthToken, getUserEmail } from "@/actions/auth";
@@ -13,55 +12,62 @@ export default function OpenOptions() {
   const [isOpen, setIsOpen] = useState(false);
   const [token, setToken] = useState(null);
   const [userSlug, setUserSlug] = useState(null);
-  const pathname = usePathname();
+  const [currentPath, setCurrentPath] = useState('');
 
+  // Use window.location.pathname for path detection without query params
   useEffect(() => {
-    // console.log("Component mounted or updated");
-    async function fetchTokenAndSlug() {
-      const token = await getAuthToken();
-      setToken(token);
+    // Set initial path
+    setCurrentPath(window.location.pathname);
+    
+    // Listen for path changes
+    const handleRouteChange = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    
+    // Add event listener for navigation changes
+    window.addEventListener('popstate', handleRouteChange);
+    
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+    };
+  }, []);
 
-      const { success, email, error } = await getUserEmail();
-      if (success) {
-        const slug = await getUserSlugByEmail(email);
-        setUserSlug(slug);
-      } else {
-        console.log("Error fetching user email:", error);
+  // Token fetching logic
+  useEffect(() => {
+    async function fetchTokenAndSlug() {
+      try {
+        const token = await getAuthToken();
+        setToken(token);
+
+        if (token) {
+          const { success, email, error } = await getUserEmail();
+          if (success) {
+            const slug = await getUserSlugByEmail(email);
+            if(slug.error){
+              setUserSlug('');
+              console.log(slug.error);
+              return;
+            }
+            else{
+              setUserSlug(slug);
+            }
+          }
+        }
+      } catch (err) {
+        console.log("Error fetching auth data:", err);
       }
     }
 
     fetchTokenAndSlug();
-  }, []); // Empty dependency array ensures this runs only once
+  }, [currentPath]); // Re-run when path changes to ensure token is current
 
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/tournaments", label: "Tournaments" },
-    { href: "/scrims", label: "Scrims" },
-    { href: "/spaces", label: "Spaces" },
-    { href: "/teams", label: "Teams" },
-    { href: "/about", label: "About" },
-  ];
+  // Check if a path is active (handling base paths properly)
+  const isActive = (href) => {
+    if (href === '/') return currentPath === '/';
+    return currentPath.startsWith(href);
+  };
 
-  const navItems2 = [
-    { href: "/", label: "Home" },
-    {
-      label: "Play",
-      sub: [
-        { href: "/tournaments", label: "Tournaments" },
-        { href: "/scrims", label: "Scrims" },
-      ],
-    },
-    { href: "/spaces", label: "Spaces" },
-    {
-      label: "Find",
-      sub: [
-        { href: "/teams", label: "Find Team" },
-        { href: "/players", label: "Find Players" },
-      ],
-    },
-    { href: "/about", label: "About" },
-  ];
-
+  // Your navigation items...
   const userItems = [
     { href: "/myTournaments", label: "My Tournaments" },
     { href: "/myScrims", label: "My Scrims" },
@@ -92,6 +98,9 @@ export default function OpenOptions() {
       >
         <NavItems2 />
 
+        {/* Add console log to debug token state */}
+        {/* {console.log("Token state:", token, "Current path:", currentPath)} */}
+
         {token ? (
           <ul className="lg:hidden flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             {userItems.map((item) => (
@@ -99,7 +108,7 @@ export default function OpenOptions() {
                 <Link href={item.href}>
                   <div
                     className={`block py-2 px-3 rounded-sm md:p-0 ${
-                      pathname === item.href
+                      isActive(item.href)
                         ? "bg-[#A78BFA] text-white md:bg-transparent md:text-[#A78BFA]"
                         : "text-gray-900 hover:bg-gray-100 md:hover:bg-transparent md:hover:text-[#A78BFA] dark:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent"
                     }`}

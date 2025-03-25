@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { createSpace } from "@/actions/prismaActions";
 import { getUserId } from "@/actions/auth";
-import { Camera, Save, CheckCircle2 } from "lucide-react";
+import { Camera, Save, CheckCircle2, Loader2, AlertTriangle, X } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 function CreateSpace() {
   const [spaceName, setSpaceName] = useState("");
@@ -15,6 +16,9 @@ function CreateSpace() {
   const [adminId, setAdminId] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -22,7 +26,7 @@ function CreateSpace() {
       if (success) {
         setAdminId(userId);
       } else {
-        console.error("Error fetching user ID:", error);
+        console.log("Error fetching user ID:", error);
       }
     };
     fetchUserId();
@@ -32,17 +36,26 @@ function CreateSpace() {
     e.preventDefault();
     setError("");
     setSuccess(false);
+    setIsLoading(true);
 
     // Validation
     const slugRegex = /^[a-z0-9-]+$/;
 
     if (!slug) {
       setError("Slug is required.");
+      setIsLoading(false);
       return;
     }
 
     if (!slugRegex.test(slug)) {
       setError("Slug can only contain lowercase letters, numbers, and hyphens.");
+      setIsLoading(false);
+      return;
+    }
+    
+    if (!spaceName) {
+      setError("Space name is required.");
+      setIsLoading(false);
       return;
     }
 
@@ -55,11 +68,18 @@ function CreateSpace() {
       adminId,
     };
 
-    const result = await createSpace(spaceData);
-    if (result.success) {
-      setSuccess(true);
-    } else {
-      setError(result.error);
+    try {
+      const result = await createSpace(spaceData);
+      setIsLoading(false);
+      
+      if (result.success) {
+        setSuccess(true);
+      } else {
+        setError(result.error);
+      }
+    } catch (err) {
+      setIsLoading(false);
+      setError(err.message || "An unexpected error occurred");
     }
   };
 
@@ -77,6 +97,24 @@ function CreateSpace() {
           >
             Go to My Spaces
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen text-white flex justify-center items-center p-6">
+        <div className="flex flex-col items-center space-y-4 bg-red-900/30 backdrop-blur-sm rounded-lg p-8 shadow-lg max-w-md w-full">
+          <AlertTriangle className="h-24 w-24 text-red-500" />
+          <p className="text-2xl font-semibold text-white text-center">Error</p>
+          <p className="text-white/80 text-center mb-2">{error}</p>
+          <button
+            onClick={() => setError("")}
+            className="mt-6 px-6 py-3 bg-white text-red-700 rounded-lg font-semibold hover:bg-red-50 transition duration-300"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );
@@ -136,6 +174,7 @@ function CreateSpace() {
                     onChange={(e) => setSpaceName(e.target.value)}
                     type="text"
                     className="w-full bg-gray-700 text-white rounded-lg pl-4 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    required
                   />
                 </div>
               </div>
@@ -161,6 +200,7 @@ function CreateSpace() {
                     onChange={(e) => setSlug(e.target.value)}
                     className="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     placeholder="Slug"
+                    required
                   />
                 </div>
               </div>
@@ -180,22 +220,34 @@ function CreateSpace() {
             </div>
           </div>
 
-          {error && <div className="text-red-500 m-[14px]">{error}</div>}
-
           {/* Action Buttons */}
           <div className="flex justify-end gap-4">
             <button
               type="button"
+              onClick={() => router.back()}
               className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition-colors"
+              disabled={isLoading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition-colors flex items-center gap-2"
+              className={`px-6 py-3 ${
+                isLoading ? "bg-purple-700" : "bg-purple-600 hover:bg-purple-700"
+              } rounded-lg font-semibold transition-colors flex items-center gap-2`}
+              disabled={isLoading}
             >
-              <Save className="w-5 h-5" />
-              Create
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  Create
+                </>
+              )}
             </button>
           </div>
         </form>

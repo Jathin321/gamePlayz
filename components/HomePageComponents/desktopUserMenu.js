@@ -3,7 +3,11 @@
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { getAuthToken, getUserEmail, logout as session_logout } from "@/actions/auth";
+import {
+  getAuthToken,
+  getUserEmail,
+  logout as session_logout,
+} from "@/actions/auth";
 import { getUserSlugByEmail } from "@/actions/prismaActions";
 
 const UserMenu = () => {
@@ -18,23 +22,31 @@ const UserMenu = () => {
   async function fetchTokenEmailAndSlug() {
     setLoading(true);
     try {
-      const fetchedToken = await getAuthToken();
+      let fetchedToken = await getAuthToken();
+      // console.log("desktop user menu: ",fetchedToken)
       setToken(fetchedToken);
 
       const { success, email, error } = await getUserEmail();
       if (success) {
         const fetchedSlug = await getUserSlugByEmail(email);
-        setSlug(fetchedSlug);
+        if (fetchedSlug.error) {
+          setSlug("");
+          console.log(fetchedSlug.error);
+          return;
+        } else {
+          console.log("from desktop user menu fetched slug: ", fetchedSlug);
+          setSlug(fetchedSlug);
+        }
       } else {
-        console.error("Error fetching user email:", error);
+        console.log("Error fetching user email:", error);
       }
     } catch (error) {
-      console.error("Error fetching token, email, and slug:", error);
+      console.log("Error fetching token, email, and slug:", error);
     } finally {
       setLoading(false);
     }
   }
-  
+
   useEffect(() => {
     fetchTokenEmailAndSlug();
   }, []);

@@ -5,7 +5,7 @@ import { supabase } from "./supabase";
 // Utility function to listen to authentication state changes
 export function onAuthStateChange(callback) {
   if (typeof callback !== "function") {
-    console.error("onAuthStateChange: callback is not a function");
+    console.log("onAuthStateChange: callback is not a function");
     return () => {}; // Return a dummy cleanup function
   }
 

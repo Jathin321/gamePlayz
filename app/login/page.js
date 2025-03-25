@@ -61,7 +61,7 @@ function Login () {
             <label htmlFor="password">Password</label>
             <input type="password" name="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             <div className={classes.forgot}>
-              <a rel="noopener noreferrer" href="#">Forgot Password ?</a>
+              <Link href="resetPassword" rel="noopener noreferrer">Forgot Password ?</Link>
             </div>
           </div>
           {error && <div className='m-[14px] text-red-500'>{error}</div>}

@@ -11,7 +11,7 @@ export default async function MySpaces() {
   const { success: spacesSuccess, spaces, error: spacesError } = await getAllSpaces();
 
   if (!userSuccess) {
-    console.error("Error fetching user ID:", userError);
+    console.log("Error fetching user ID:", userError);
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
         <div className="container mx-auto px-4 py-6">
@@ -22,7 +22,7 @@ export default async function MySpaces() {
   }
 
   if (!spacesSuccess) {
-    console.error("Error fetching spaces:", spacesError);
+    console.log("Error fetching spaces:", spacesError);
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
         <div className="container mx-auto px-4 py-6">

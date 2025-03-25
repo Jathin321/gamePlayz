@@ -1,254 +1,134 @@
-"use client";
-import { useState, useEffect } from "react";
-import {
-  Search,
-  Calendar,
-  Users2,
-  DollarSign,
-  Trophy,
-  ArrowRight,
-  TrendingUp,
-} from "lucide-react";
 import ScrimsCard from "@/components/ScrimComponents/scrimsCard";
 import { getAllScrims } from "@/actions/prismaActions";
+import { Trophy } from "lucide-react";
+import ScrimsFilterTabs from "@/components/ScrimComponents/filterTabs";
+import Link from "next/link";
 
-function Scrims() {
-  const [activeTab, setActiveTab] = useState("live");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [scrims, setScrims] = useState([]);
-  const [error, setError] = useState(null);
+export const metadata = {
+  title: "Scrims | GamePlayz",
+  description:
+    "Find and join gaming scrims, practice matches, and competitions with other players.",
+  keywords: [
+    "scrims",
+    "gaming",
+    "practice matches",
+    "tournaments",
+    "competitive gaming",
+    "esports"
+  ],
+};
 
-  useEffect(() => {
-    const fetchScrims = async () => {
-      const { success, scrims, error } = await getAllScrims();
-      if (success) {
-        setScrims(scrims);
-      } else {
-        setError(error);
-      }
-    };
+export const dynamic = 'force-dynamic';
 
-    fetchScrims();
-  }, []);
+export default async function Scrims(props) {
+
+  const searchParams = await props.searchParams;
+
+  // Get search query and tab filter from URL parameters
+  const searchQuery = searchParams?.q || "";
+  const activeTab = searchParams?.tab || "live";
+
+  // Fetch scrims on the server
+  const { success, scrims = [], error } = await getAllScrims();
+
+  // Filter scrims based on search query and tab
+  const filteredScrims = scrims.filter((scrim) => {
+    // Search filter
+    const matchesSearch = searchQuery
+      ? // Check name (if it's a string)
+        (typeof scrim.name === "string" &&
+          scrim.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        // Check game - handling different possible types
+        (typeof scrim.game === "string"
+          ? scrim.game.toLowerCase().includes(searchQuery.toLowerCase())
+          : Array.isArray(scrim.game)
+          ? scrim.game.some(
+              (g) =>
+                typeof g === "string" &&
+                g.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+          : false) ||
+        // Check space name
+        (scrim.space?.spaceName
+          ? scrim.space.spaceName
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+          : false)
+      : true;
+
+    // Tab filter
+    let matchesTab = true;
+    const now = new Date();
+
+    if (activeTab === "live") {
+      matchesTab =
+        scrim.status === "registering" || scrim.status === "matchmaking";
+    } else if (activeTab === "upcoming") {
+      matchesTab = scrim.status === "upcoming";
+    } else if (activeTab === "past") {
+      matchesTab = scrim.status === "completed";
+    }
+
+    return matchesSearch && matchesTab;
+  });
 
   if (error) {
-    return <div>Error fetching scrims: {error}</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center">
+        <div className="bg-gray-800/80 backdrop-blur-sm p-8 rounded-xl text-white text-center">
+          <h2 className="text-2xl font-bold mb-2">Error</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
       <div className="container mx-auto px-4 py-6">
+        {/* Client component for interactive search and tabs */}
+        <ScrimsFilterTabs currentTab={activeTab} currentSearch={searchQuery} />
 
-        {/* Fixed Search Bar & Navigation */}
-        <div className="sticky top-16 z-10">
-          {/* Search Bar */}
-          <div className="relative max-w-2xl mx-auto py-4">
-            <div className="absolute z-10 inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Search className="h-5 w-5 text-white" />
-            </div>
-            <input
-              type="text"
-              className="block backdrop-blur-md w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Search Scrims by name, game, or organizer..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          {/* Navigation Tabs */}
-          <div className="flex justify-center pb-2 mb-4">
-            <nav className="flex bg-gray-800/30 backdrop-blur-md rounded-xl">
-              {[
-                {
-                  id: "live",
-                  label: "Live",
-                  icon: <TrendingUp className="w-4 h-4" />,
-                },
-                {
-                  id: "upcoming",
-                  label: "Upcoming",
-                  icon: <Calendar className="w-4 h-4" />,
-                },
-                {
-                  id: "past",
-                  label: "Past",
-                  icon: <Trophy className="w-4 h-4" />,
-                },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-6 py-3 rounded-lg transition-all duration-200 ${
-                    activeTab === tab.id
-                      ? "bg-purple-600 text-white"
-                      : "text-gray-200 hover:text-white hover:bg-gray-700/50"
-                  }`}
+        {/* Empty State */}
+        {filteredScrims.length === 0 && (
+          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-12 text-center my-8">
+            <Trophy className="w-16 h-16 text-purple-400 mx-auto mb-4 opacity-50" />
+            <h3 className="text-2xl font-bold text-white mb-2">
+              No Scrims Available
+            </h3>
+            <p className="text-gray-300 max-w-md mx-auto mb-6">
+              {searchQuery
+                ? `We couldn't find any scrims matching "${searchQuery}". Try a different search term.`
+                : "There are currently no scrims available. Check back later or create your own scrim!"}
+            </p>
+            <div className="flex justify-center gap-4">
+              {searchQuery && (
+                <Link
+                  href="/scrims"
+                  className="px-5 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-all"
                 >
-                  {tab.icon}
-                  <span>{tab.label}</span>
-                </button>
-              ))}
-            </nav>
+                  Clear Search
+                </Link>
+              )}
+              <Link
+                href="/mySpaces"
+                className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-all"
+              >
+                Create Scrim
+              </Link>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tournament Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {scrims.map((scrim) => (
-            <ScrimsCard key={scrim.id} scrim={scrim} />
-          ))}
-        </div>
+        {filteredScrims.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredScrims.map((scrim) => (
+              <ScrimsCard key={scrim.id} scrim={scrim} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
-export default Scrims;
-
-{/* Tournament Card 1
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition duration-300">
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80"
-                alt="Valorant Tournament"
-                className="w-full h-40 object-cover"
-              />
-              <div className="absolute top-4 right-4">
-                <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
-                  Live
-                </span>
-              </div>
-            </div>
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-white mb-2">Valorant Champions Tour</h3>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>March 15, 2024 - 18:00 UTC</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Users2 className="w-4 h-4 mr-2" />
-                  <span>32 Teams (16 spots left)</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <DollarSign className="w-4 h-4 mr-2" />
-                  <span>$25,000 Prize Pool</span>
-                </div>
-              </div>
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition flex items-center justify-center space-x-2">
-                <span>View Details</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          Tournament Card 2
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition duration-300">
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80"
-                alt="CS2 Tournament"
-                className="w-full h-40 object-cover"
-              />
-              <div className="absolute top-4 right-4">
-                <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
-                  Registering
-                </span>
-              </div>
-            </div>
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-white mb-2">CS2 Pro League Season 6</h3>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>March 20, 2024 - 20:00 UTC</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Users2 className="w-4 h-4 mr-2" />
-                  <span>64 Teams (8 spots left)</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <DollarSign className="w-4 h-4 mr-2" />
-                  <span>$35,000 Prize Pool</span>
-                </div>
-              </div>
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition flex items-center justify-center space-x-2">
-                <span>View Details</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          Tournament Card 3
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition duration-300">
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80"
-                alt="Rocket League Tournament"
-                className="w-full h-40 object-cover"
-              />
-              <div className="absolute top-4 right-4">
-                <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
-                  Upcoming
-                </span>
-              </div>
-            </div>
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-white mb-2">Rocket League Masters</h3>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>March 25, 2024 - 19:00 UTC</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Users2 className="w-4 h-4 mr-2" />
-                  <span>48 Teams (4 spots left)</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <DollarSign className="w-4 h-4 mr-2" />
-                  <span>$20,000 Prize Pool</span>
-                </div>
-              </div>
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition flex items-center justify-center space-x-2">
-                <span>View Details</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          Tournament Card 4
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl overflow-hidden hover:transform hover:scale-105 transition duration-300">
-            <div className="relative">
-              <img
-                src="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=800&q=80"
-                alt="Dota 2 Tournament"
-                className="w-full h-40 object-cover"
-              />
-              <div className="absolute top-4 right-4">
-                <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
-                  Live
-                </span>
-              </div>
-            </div>
-            <div className="p-6">
-              <h3 className="text-lg font-bold text-white mb-2">Dota 2 Championship</h3>
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  <span>March 18, 2024 - 16:00 UTC</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <Users2 className="w-4 h-4 mr-2" />
-                  <span>16 Teams (Full)</span>
-                </div>
-                <div className="flex items-center text-gray-300 text-sm">
-                  <DollarSign className="w-4 h-4 mr-2" />
-                  <span>$45,000 Prize Pool</span>
-                </div>
-              </div>
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition flex items-center justify-center space-x-2">
-                <span>View Details</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div> */}

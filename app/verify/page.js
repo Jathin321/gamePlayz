@@ -48,7 +48,7 @@ export default function VerifyAccount() {
       const { error } = await supabase.auth.verifyOtp({ type, token_hash });
 
       if (error) {
-        console.error("OTP Verification Error:", error);
+        console.log("OTP Verification Error:", error);
         setStatus("error");
 
         if (error.code === "otp_expired") {
@@ -92,7 +92,7 @@ export default function VerifyAccount() {
           );
         }
       } catch (err) {
-        console.error("Error creating user:", err);
+        console.log("Error creating user:", err);
         setStatus("error");
         setErrorMessage(
           "Verified but unable to create profile, please try again."

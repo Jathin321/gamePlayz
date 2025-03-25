@@ -2,18 +2,25 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
-import classes from "./style.module.css";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Gamepad,
-  Gamepad2,
   Calendar,
   Users,
-  Ticket,
-  Wallet,
-  CalendarClock,
+  MessageSquare,
+  Trophy,
+  Megaphone,
   Loader2,
   Settings,
+  ChevronLeft,
+  Share2,
   Plus,
+  ChevronRight,
+  Info,
+  AlertTriangle,
+  Home as HomeIcon,
+  ShieldCheck,
 } from "lucide-react";
 import Announcements from "@/components/SharedComponents/announcements";
 import Idp from "@/components/SharedComponents/idp";
@@ -22,11 +29,10 @@ import Tournaments from "@/components/spaceComponents/tournaments";
 import Scrims from "@/components/spaceComponents/scrims";
 import { getSpaceDetailsBySlug } from "@/actions/prismaActions";
 import { getUserId } from "@/actions/auth";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 
-const ScrimDetails = () => {
+const SpaceDetails = () => {
   const scrollContainerRef = useRef(null);
+  const navRef = useRef(null);
   const router = useRouter();
   const { slug } = useParams();
   const path = usePathname();
@@ -34,10 +40,56 @@ const ScrimDetails = () => {
   const [activeTab, setActiveTab] = useState("Home");
   const [spaceDetails, setSpaceDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [loadingError, setLoadingError] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
+  // Navigation items with icons
+  const navigationItems = [
+    { id: "Home", label: "Home", icon: <HomeIcon className="w-4 h-4" /> },
+    {
+      id: "Tournaments",
+      label: "Tournaments",
+      icon: <Trophy className="w-4 h-4" />,
+    },
+    { id: "Scrims", label: "Scrims", icon: <Gamepad className="w-4 h-4" /> },
+    {
+      id: "Announcements",
+      label: "Announcements",
+      icon: <Megaphone className="w-4 h-4" />,
+    },
+    {
+      id: "Live Chat",
+      label: "Live Chat",
+      icon: <MessageSquare className="w-4 h-4" />,
+    },
+  ];
+
+  // Handle scroll event for sticky navigation
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 200) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Animation mount effect
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Fetch space details
   useEffect(() => {
     setLoading(true);
+    setLoadingError(null);
+
     const fetchDetails = async () => {
       try {
         const userResponse = await getUserId();
@@ -46,9 +98,14 @@ const ScrimDetails = () => {
         }
 
         const details = await getSpaceDetailsBySlug(slug);
-        setSpaceDetails(details);
+        if (!details) {
+          setLoadingError("Space not found");
+        } else {
+          setSpaceDetails(details);
+        }
       } catch (error) {
-        console.error("Error fetching details:", error);
+        console.log("Error fetching details:", error);
+        setLoadingError(error.message || "Failed to load space details");
       } finally {
         setLoading(false);
       }
@@ -59,18 +116,15 @@ const ScrimDetails = () => {
 
   const handleRightScroll = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollLeft =
-        scrollContainerRef.current.scrollWidth;
+      scrollContainerRef.current.scrollBy({ left: 200, behavior: "smooth" });
     }
   };
 
-  const navigationBar = [
-    "Home",
-    "Tournaments",
-    "Scrims",
-    "Announcements",
-    "Live Chat",
-  ];
+  const handleLeftScroll = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollBy({ left: -200, behavior: "smooth" });
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -82,10 +136,16 @@ const ScrimDetails = () => {
         return <Scrims slug={slug} />;
       case "Announcements":
         return <Announcements />;
+      case "Live Chat":
+        return (
+          <div className="text-white p-8 text-center">
+            Live Chat Coming Soon
+          </div>
+        );
       case "IDP":
         return <Idp />;
       default:
-        return <p className="text-white">Overview Content</p>;
+        return <Home slug={slug} />;
     }
   };
 
@@ -97,197 +157,352 @@ const ScrimDetails = () => {
     }
   };
 
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: spaceDetails?.spaceName || "Gaming Space",
+        text: `Check out ${spaceDetails?.spaceName} on GamePlayz!`,
+        url: window.location.href,
+      });
+    } else {
+      // Fallback - copy to clipboard
+      navigator.clipboard.writeText(window.location.href);
+      alert("Link copied to clipboard!");
+    }
+  };
+
+  // Loading state with animation
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-white text-center flex">
-          <Loader2 className="w-12 h-12 animate-spin" />
-          <p className="px-2 mt-4 text-lg">Loading...</p>
+      <div className="flex flex-col justify-center items-center h-screen bg-gray-900">
+        <div className="relative w-20 h-20">
+          <div className="absolute inset-0 rounded-full border-4 border-purple-300/20"></div>
+          <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-purple-500 animate-spin"></div>
+          <Gamepad className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 text-purple-400" />
+        </div>
+        <p className="text-purple-300 mt-6 text-lg">Loading space details...</p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (loadingError) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen bg-gray-900 px-4">
+        <div className="bg-gray-800/80 p-8 rounded-xl max-w-md w-full text-center shadow-lg border border-gray-700">
+          <div className="mx-auto w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4">
+            <AlertTriangle className="h-8 w-8 text-red-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            Something went wrong
+          </h2>
+          <p className="text-gray-300 mb-6">{loadingError}</p>
+          <button
+            onClick={handleBack}
+            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );
   }
 
+  // Space not found state
   if (!spaceDetails) {
-    return <div className="text-white text-center mt-16">Space not found</div>;
+    return (
+      <div className="flex flex-col justify-center items-center h-screen bg-gray-900 px-4">
+        <div className="bg-gray-800/80 p-8 rounded-xl max-w-md w-full text-center shadow-lg border border-gray-700">
+          <div className="mx-auto w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center mb-4">
+            <Info className="h-8 w-8 text-yellow-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            Space Not Found
+          </h2>
+          <p className="text-gray-300 mb-6">
+            The space you're looking for might have been removed or doesn't
+            exist.
+          </p>
+          <Link
+            href="/spaces"
+            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors inline-block"
+          >
+            Browse Spaces
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   const isAdmin = userId == spaceDetails.adminId;
+  const isVerified = true; // You might want to add this property to your space data
 
   return (
-    <div className="bg-gray-900 mt-16">
+    <div
+      className={`bg-gray-900 min-h-screen ${
+        isMounted ? "animate-fadeIn" : "opacity-0"
+      }`}
+    >
       {/* Banner */}
-      <div
-        className={`${classes.banner} lg:h-[250px] md:h-[200px] h-[150px] relative w-full mt-18`}
-      >
+      <div className="relative mt-12 w-full h-[260px] md:h-[280px] lg:h-[320px] overflow-hidden">
+        {/* Banner Image */}
+        <div
+          className={`absolute inset-0 bg-cover bg-center transform transition-transform duration-700 ${
+            isScrolled ? "scale-110" : "scale-100"
+          }`}
+          style={{
+            backgroundImage: `url(${
+              spaceDetails.banner ||
+              "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200"
+            })`,
+          }}
+        />
+
+        {/* Gradient Overlay - Enhanced for better text visibility */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-gray-900/50 to-gray-900"></div>
+
         {/* Back Button */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="30"
-          height="30"
-          fill="currentColor"
-          className="absolute top-2 left-2 text-white cursor-pointer"
-          viewBox="0 0 16 16"
+        <button
           onClick={handleBack}
+          className="absolute top-4 left-4 z-10 bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white p-2 rounded-full transition-all duration-200"
         >
-          <path
-            fillRule="evenodd"
-            d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
-          />
-        </svg>
+          <ChevronLeft className="w-6 h-6" />
+        </button>
 
-        {/* Share Icon */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
-          fill="currentColor"
-          className="absolute top-3 right-2 text-white cursor-pointer"
-          viewBox="0 0 16 16"
+        {/* Share Button */}
+        <button
+          onClick={handleShare}
+          className="absolute top-4 right-4 z-10 bg-black/30 backdrop-blur-sm hover:bg-black/50 text-white p-2 rounded-full transition-all duration-200"
         >
-          <path d="M11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.5 2.5 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5" />
-        </svg>
+          <Share2 className="w-6 h-6" />
+        </button>
       </div>
 
-      {/* Details */}
-      <div className="relative hidden px-20 md:block lg:block">
-        <div className="flex flex-col md:flex-row items-center text-center md:text-left -translate-y-[45%]">
+      {/* Space Info - Desktop */}
+      <div className="relative hidden md:block lg:block px-6 lg:px-20">
+        <div className="flex flex-col md:flex-row items-center text-center md:text-left -mt-24">
           {/* Profile Picture */}
-          <div className="w-full md:w-1/4 flex justify-center mb-3 md:mb-0">
-            <img
-              src={spaceDetails.profilePic || "null"}
-              alt="Profile Picture"
-              className="w-64 h-64 border border-violet-600 rounded-full object-cover"
-            />
+          <div className="w-full md:w-1/4 flex justify-center mb-6 md:mb-0">
+            <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-gray-800 border-4 border-gray-800 overflow-hidden shadow-xl">
+              {spaceDetails.profilePic ? (
+                <img
+                  src={spaceDetails.profilePic}
+                  alt={spaceDetails.spaceName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-600 to-indigo-700">
+                  <span className="text-6xl font-bold">
+                    {spaceDetails.spaceName?.[0]?.toUpperCase() || 'S'}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
 
-          {/* Tournament Details */}
+          {/* Space Details */}
           <div className="w-full md:w-2/4 md:mb-0 text-white">
-            <h2 className="text-4xl">{spaceDetails.spaceName}</h2>
-            <div className="flex pt-3 items-center gap-2 text-md text-gray-300">
+            <div className="flex items-center justify-center md:justify-start mb-2">
+              <h1 className="text-3xl md:text-4xl font-bold">
+                {spaceDetails.spaceName}
+              </h1>
+              {isVerified && (
+                <div className="ml-2 bg-blue-500/20 p-1 rounded-full">
+                  <ShieldCheck className="w-5 h-5 text-blue-500" />
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-center md:justify-start gap-2 text-gray-300">
               <Users className="w-4 h-4" />
-              <h1>12200 members</h1>
+              <span className="text-gray-300">12,200 members</span>
+            </div>
+            <p className="mt-3 text-gray-300 hidden md:block">
+              {spaceDetails.description ||
+                "Join our gaming community for tournaments, scrims, and more!"}
+            </p>
+          </div>
+
+          {/* Join and Settings Buttons */}
+          <div className="w-full md:w-1/4 flex flex-col md:items-end mt-4 md:mt-0 space-y-3">
+            <div className="flex items-center space-x-3 justify-center md:justify-end">
+              <button className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full px-8 py-2.5 font-medium transition-transform hover:scale-105 shadow-lg shadow-purple-600/20 hover:shadow-purple-600/40">
+                {isAdmin ? "You're Admin" : "Join Space"}
+              </button>
+
+              {isAdmin && (
+                <Link
+                  href={`${path}/settings`}
+                  className="bg-gray-700 hover:bg-gray-600 text-white rounded-full p-2.5 transition-colors shadow-lg"
+                >
+                  <Settings className="w-5 h-5" />
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Space Info */}
+      <div className="block md:hidden -mt-16 px-4 relative z-10">
+        <div className="bg-gray-800/70 backdrop-blur-md rounded-xl p-4 shadow-lg border border-gray-700">
+          {/* Profile Section */}
+          <div className="flex items-center">
+            {/* Profile Picture */}
+            <div className="mr-4">
+              <div className="w-20 h-20 rounded-full bg-gray-800 border-2 border-gray-700 overflow-hidden shadow-lg">
+                {spaceDetails.profilePic ? (
+                  <img
+                    src={spaceDetails.profilePic}
+                    alt={spaceDetails.spaceName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-600 to-indigo-700">
+                    <span className="text-xl font-bold">
+                      {spaceDetails.spaceName?.[0]?.toUpperCase() || 'S'}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Space Details */}
+            <div className="flex-1 text-white">
+              <div className="flex items-center mb-1">
+                <h2 className="text-lg font-semibold">
+                  {spaceDetails.spaceName}
+                </h2>
+                {isVerified && (
+                  <div className="ml-1.5 bg-blue-500/20 p-0.5 rounded-full">
+                    <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center text-xs text-gray-300">
+                <Users className="w-3 h-3 mr-1" />
+                <span>12,200 members</span>
+              </div>
             </div>
           </div>
 
-          {/* Join Button and Settings Button */}
-          <div className="w-full md:w-1/4 flex justify-center items-center gap-2">
-            <button className="w-full md:w-3/4 bg-[#9875ff] text-white rounded-full px-4 py-2">
-              {isAdmin == true ? "You are the Admin" : "Join Space"}
+          {/* Mobile Join/Admin Buttons */}
+          <div className="mt-4 flex items-center gap-2">
+            <button className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg py-2 text-sm font-medium shadow-md">
+              {isAdmin ? "You're Admin" : "Join Space"}
             </button>
             {isAdmin && (
               <Link
                 href={`${path}/settings`}
-                className="bg-gray-700 text-white rounded-full p-2"
+                className="bg-gray-700 text-white rounded-lg p-2"
               >
-                <Settings className="w-5 h-5" />
+                <Settings className="w-4 h-4" />
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                href={`${path}/create`}
+                className="bg-gray-700 text-white rounded-lg p-2"
+              >
+                <Plus className="w-4 h-4" />
               </Link>
             )}
           </div>
         </div>
       </div>
 
-      {/*Mobile Details */}
-      <div className="block md:hidden lg:hidden">
-        {/* Profile Section */}
-        <div className="flex items-center">
-          {/* Profile Picture */}
-          <div className="w-1/4 ml-2">
-            <img
-              src={spaceDetails.profilePic || "null"}
-              alt="Profile Picture"
-              className="rounded-full border border-solid w-20 h-20 object-cover"
-            />
-          </div>
-
-          {/* Tournament Details */}
-          <div className="w-3/4 text-white">
-            <h2 className="text-2xl font-semibold mb-1">
-              {spaceDetails.spaceName}
-            </h2>
-            <div className="flex items-center gap-2 text-sm text-gray-400">
-              <Users className="w-4 h-4" />
-              <span>12200 members</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Join Tournament Button */}
-        <div className="text-center mt-3 flex flex-col items-center gap-3">
-          <div className="flex w-full gap-3">
-            <button className="bg-[#9875ff] w-[70%] text-white rounded-full flex-1 py-3">
-              {isAdmin ? "You Are The Admin" : "Join"}
-            </button>
-            {isAdmin && (
-              <Link
-                href={`${path}/settings`}
-                className="bg-gray-700 w-[15%] text-white rounded-full p-2 flex items-center justify-center"
-              >
-                <Settings className="w-5 h-5" />
-              </Link>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Horizontal Scrollable Navigation */}
+      {/* Sticky Navigation - Desktop */}
       <div
-        className={`${classes.customActiveButton} hidden md:block lg:block px-32 bg-transparent mt-[-8%]`}
+        ref={navRef}
+        className={`hidden md:block ${
+          isScrolled
+            ? "sticky top-0 z-50 bg-gray-900/80 backdrop-blur-md shadow-lg transform transition-all duration-300 py-1"
+            : "bg-transparent mt-6"
+        }`}
       >
-        <div className="container mx-auto">
-          <div className="flex gap-20 py-3">
-            {navigationBar.map((tab) => (
+        <div className="container mx-auto px-6">
+          <div className="flex justify-center items-center">
+            {navigationItems.map((item) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`${
-                  classes.customNavButton
-                } px-4 py-2 text-white transition-all ${
-                  activeTab == tab
-                    ? `${classes.underlineActive} border-white`
-                    : "border-transparent"
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`px-6 py-3 text-white font-medium transition-all duration-300 flex items-center relative ${
+                  activeTab === item.id
+                    ? "text-purple-400"
+                    : "text-gray-400 hover:text-white"
                 }`}
               >
-                {tab}
+                <span className="mr-2">{item.icon}</span>
+                <span>{item.label}</span>
+                {activeTab === item.id && (
+                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-purple-500 to-purple-300 transform scale-x-100 origin-left transition-transform duration-300"></span>
+                )}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Mobile horizontal nav  */}
+      {/* Mobile Navigation - Horizontal Scrollable */}
       <div
-        className={`${classes.customActiveButton} custom-horizontal-nav bg-transparent mt-4 lg:hidden md:hidden`}
+        className={`mt-6 md:hidden relative ${
+          isScrolled
+            ? "sticky top-0 z-50 bg-gray-900/90 backdrop-blur-md shadow-md"
+            : ""
+        } py-1`}
       >
-        <div className="right-scroll-container" onClick={handleRightScroll}>
-          {/* <RightScrollButton />  */}
-        </div>
-        <div className="container">
+        <div className="relative">
           <div
             ref={scrollContainerRef}
-            className="flex gap-3 overflow-auto py-3 px-2 scroll-smooth"
+            className="flex overflow-x-auto py-3 px-4 hide-scrollbar scroll-smooth"
           >
-            {navigationBar.map((tab) => (
+            {navigationItems.map((item) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`btn custom-nav-button px-4 ${
-                  activeTab === tab
-                    ? `${classes.underlineActive} text-white`
-                    : ""
-                }`}
+                key={item.id}
+                onClick={() => setActiveTab(item.id)}
+                className={`flex flex-col items-center min-w-[80px] px-4 ${
+                  activeTab === item.id ? "text-purple-400" : "text-gray-400"
+                } transition-colors`}
               >
-                {tab}
+                <span
+                  className={`p-2 rounded-full mb-1 ${
+                    activeTab === item.id ? "bg-purple-500/20" : ""
+                  }`}
+                >
+                  {item.icon}
+                </span>
+                <span className="text-xs whitespace-nowrap">{item.label}</span>
               </button>
             ))}
-            <div className="mr-[100px]"></div>
           </div>
+
+          {/* Left scroll button */}
+          <button
+            onClick={handleLeftScroll}
+            className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800/80 rounded-r-lg p-1 shadow"
+          >
+            <ChevronLeft className="w-4 h-4 text-gray-300" />
+          </button>
+
+          {/* Right scroll button */}
+          <button
+            onClick={handleRightScroll}
+            className="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800/80 rounded-l-lg p-1 shadow"
+          >
+            <ChevronRight className="w-4 h-4 text-gray-300" />
+          </button>
+
+          {/* Gradient overlays to indicate scrolling */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-gray-900 to-transparent pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-gray-900 to-transparent pointer-events-none"></div>
         </div>
       </div>
 
-      {renderContent()}
+      {/* Content Area */}
+      <div className="container mx-auto px-4 pt-6 pb-20 animate-fadeIn">
+        {renderContent()}
+      </div>
     </div>
   );
 };
 
-export default ScrimDetails;
+export default SpaceDetails;

@@ -17,7 +17,7 @@ export async function getSession() {
   const { data: { session }, error } = await supabase.auth.getSession();
 
   if (error) {
-    console.error("Error fetching session:", error);
+    console.log("Error fetching session:", error);
     return null;
   }
   console.log("From getSession : ",session?.user);
