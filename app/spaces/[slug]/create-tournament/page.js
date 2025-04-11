@@ -1,12 +1,13 @@
 'use client';
 import React, { useState, useRef } from 'react';
 import { Trophy } from 'lucide-react';
-import BasicDetails from '../../components/CreateTournamentComponents/bacsicDetails';
-import RulesSection from '../../components/CreateTournamentComponents/rulesSection';
-import TeamSettings from '../../components/CreateTournamentComponents/teamSettings';
-import PrizeDetails from '../../components/CreateTournamentComponents/prizeDetails';
-import TournamentStatus from '../../components/CreateTournamentComponents/tournamentStatus';
-import TournamentPreview from '../../components/CreateTournamentComponents/tournamentPreview';
+import BasicDetails from '@/components/CreateTournamentComponents/bacsicDetails';
+import RulesSection from '@/components/CreateTournamentComponents/rulesSection';
+import FormatDetails from '@/components/CreateTournamentComponents/formatDetails';
+import TeamSettings from '@/components/CreateTournamentComponents/teamSettings';
+import PrizeDetails from '@/components/CreateTournamentComponents/prizeDetails';
+import TournamentStatus from '@/components/CreateTournamentComponents/tournamentStatus';
+import TournamentPreview from '@/components/CreateTournamentComponents/tournamentPreview';
 
 const initialFormData = {
   name: '',
@@ -25,6 +26,11 @@ const initialFormData = {
   },
   rules: [],
   format: 'single-elimination',
+  rounds: 1,
+  gameMode: '5v5',
+  matchFormat: 'bo1',
+  seeding: 'random',
+  thirdPlaceMatch: false,
   status: 'draft',
 };
 
@@ -42,12 +48,14 @@ function CreateTournament() {
     console.log('Tournament data:', formData);
   };
 
+  // Updated steps with Format Details after Team Settings
   const steps = [
     { number: 1, title: 'Basic Details' },
-    { number: 2, title: 'Rules & Format' },
+    { number: 2, title: 'Rules' },
     { number: 3, title: 'Team Settings' },
-    { number: 4, title: 'Prize Details' },
-    { number: 5, title: 'Review' },
+    { number: 4, title: 'Format' },
+    { number: 5, title: 'Prize Details' },
+    { number: 6, title: 'Review' },
   ];
 
   // Function to handle next button click
@@ -119,13 +127,14 @@ function CreateTournament() {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="flex flex-col lg:flex-row gap-8">
-            {/* Main Form Content */}
+            {/* Main Form Content - Updated order of components */}
             <div className="flex-1 space-y-6">
               {currentStep === 1 && <BasicDetails formData={formData} onUpdate={handleUpdateForm} />}
               {currentStep === 2 && <RulesSection formData={formData} onUpdate={handleUpdateForm} />}
               {currentStep === 3 && <TeamSettings formData={formData} onUpdate={handleUpdateForm} />}
-              {currentStep === 4 && <PrizeDetails formData={formData} onUpdate={handleUpdateForm} />}
-              {currentStep === 5 && <TournamentPreview formData={formData} />}
+              {currentStep === 4 && <FormatDetails formData={formData} onUpdate={handleUpdateForm} />}
+              {currentStep === 5 && <PrizeDetails formData={formData} onUpdate={handleUpdateForm} />}
+              {currentStep === 6 && <TournamentPreview formData={formData} />}
 
               {/* Navigation Buttons */}
               <div className="flex justify-between pt-6">
@@ -146,7 +155,7 @@ function CreateTournament() {
                   onClick={handleNext}
                   className="px-4 sm:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition-colors"
                 >
-                  {currentStep === 5 ? 'Create Tournament' : 'Next'}
+                  {currentStep === 6 ? 'Create Tournament' : 'Next'}
                 </button>
               </div>
             </div>

@@ -22,7 +22,7 @@ import {
   Eye,
   Bell,
 } from "lucide-react";
-import RegisteredTeams from "@/components/SharedComponents/registeredTeams";
+import RegisteredTeams from "@/components/ScrimComponents/registeredTeams";
 import PointsTable from "@/components/SharedComponents/pointsTable";
 import Announcements from "@/components/ScrimComponents/announcements";
 import Idp from "@/components/SharedComponents/idp";

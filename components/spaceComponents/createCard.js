@@ -10,7 +10,7 @@ export default function CreateCard({ title, description, icon: Icon, slug, conte
     href = `/spaces/${slug}/create-scrim`;
   }
   else{
-    href = "/create-tournament";
+    href = `/spaces/${slug}/create-tournament`;
   }
  
   return (

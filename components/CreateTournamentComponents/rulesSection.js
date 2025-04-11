@@ -18,27 +18,9 @@ function RulesSection({ formData, onUpdate }) {
 
   return (
     <div className="bg-gray-800 rounded-lg p-6">
-      <h2 className="text-xl font-semibold mb-6">Tournament Rules & Format</h2>
+      <h2 className="text-xl font-semibold mb-6">Tournament Rules</h2>
       
       <div className="space-y-6">
-        {/* Tournament Format */}
-        <div>
-          <label htmlFor="format" className="block text-sm font-medium text-gray-400 mb-2">
-            Tournament Format
-          </label>
-          <select
-            id="format"
-            value={formData.format}
-            onChange={(e) => onUpdate({ format: e.target.value })}
-            className="w-full bg-gray-700 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-          >
-            <option value="single-elimination">Single Elimination</option>
-            <option value="double-elimination">Double Elimination</option>
-            <option value="round-robin">Round Robin</option>
-            <option value="swiss">Swiss System</option>
-          </select>
-        </div>
-
         {/* Rules List */}
         <div>
           <div className="flex items-center justify-between mb-4">

@@ -14,7 +14,7 @@ import {
   CalendarClock,
 } from "lucide-react";
 import TournamentDetailsComponent from "@/components/TournamentComponents/tournamentDetails";
-import RegisteredTeams from "@/components/SharedComponents/registeredTeams";
+import RegisteredTeams from "@/components/ScrimComponents/registeredTeams";
 import PointsTable from "@/components/SharedComponents/pointsTable";
 import Announcements from "@/components/SharedComponents/announcements";
 import Idp from "@/components/SharedComponents/idp";

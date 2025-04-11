@@ -79,38 +79,50 @@ export default async function Spaces(props) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden mt-12">
+      {/* Full-screen Hero Section */}
+      <div className="relative min-h-[calc(100vh-3rem)] flex items-center overflow-hidden">
+        {/* Background effects */}
         <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_rgba(255,255,255,0.1)_0%,_rgba(0,0,0,0)_70%)]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_rgba(255,255,255,0.15)_0%,_rgba(0,0,0,0)_70%)]"></div>
         </div>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20 relative z-10">
+        
+        {/* Decorative orbs */}
+        <div className="absolute right-0 bottom-0 md:-bottom-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
+        <div className="absolute left-0 top-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl hidden md:block"></div>
+        
+        {/* Content container */}
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 md:py-0 relative z-10 w-full">
           <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-200">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-200 leading-tight">
               Gaming Communities & Spaces
             </h1>
-            <p className="text-lg text-purple-100 mb-8 leading-relaxed">
+            <p className="text-base sm:text-lg text-purple-100 mb-6 sm:mb-8 leading-relaxed max-w-xl">
               Join active gaming communities, participate in tournaments, or
               create your own space to host events and connect with players.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Link
                 href="/create-space"
-                className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition-all text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 flex items-center justify-center gap-2"
+                className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition-all text-white shadow-lg shadow-purple-500/20 hover:shadow-purple-500/30 flex items-center justify-center gap-2 text-center"
               >
                 <Plus className="w-5 h-5" />
                 Create Your Space
               </Link>
-              {/* Replace the button with the client component */}
               <ExploreButton />
+            </div>
+            
+            {/* Scroll indicator */}
+            <div className="mt-12 md:mt-24 hidden sm:flex items-center gap-2 text-purple-300/80 animate-pulse">
+              <span>Scroll to explore</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-chevron-down">
+                <path d="m6 9 6 6 6-6"/>
+              </svg>
             </div>
           </div>
         </div>
-
-        {/* Decorative element */}
-        <div className="absolute right-0 -bottom-40 md:-bottom-20 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl"></div>
       </div>
-      
+
+      {/* Rest of the page content remains the same */}
       <div id="explore-spaces" className="container mx-auto px-4 pt-8">
         {/* Search and Filter Bar */}
         <div className="sticky top-20 z-10 flex flex-col gap-4 mb-8">
@@ -189,7 +201,7 @@ export default async function Spaces(props) {
 
         {/* Results Header */}
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">
+          <h2 className="text-2xl font-bold text-white lg:ml-[180px]">
             {searchQuery || categoryFilter !== "all"
               ? "Search Results"
               : "All Spaces"}

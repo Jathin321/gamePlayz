@@ -27,6 +27,7 @@ model User {
   updatedAt        DateTime          @updatedAt @map("updated_at")
   Spaces           Space[]
   Scrim            Scrim[]
+  Tournament       Tournament[]
   Teams            Team[]
   teamMembers      TeamMember[]
   sentRequests     TeamJoinRequest[] @relation("Sender")
@@ -54,29 +55,31 @@ enum Gender {
 }
 
 model Space {
-  id         String   @id @default(cuid()) @map("id")
-  slug       String   @unique
-  spaceName  String   @map("space_name")
-  desc       String   @db.Text
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
-  profilePic String?  @map("profile_pic")
+  id         String       @id @default(cuid()) @map("id")
+  slug       String       @unique
+  spaceName  String       @map("space_name")
+  desc       String       @db.Text
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @updatedAt @map("updated_at")
+  profilePic String?      @map("profile_pic")
   banner     String?
-  admin      User     @relation(fields: [adminId], references: [id])
-  adminId    String   @map("admin_id")
+  admin      User         @relation(fields: [adminId], references: [id])
+  adminId    String       @map("admin_id")
   Scrim      Scrim[]
+  Tournament Tournament[]
 
   @@map("spaces")
 }
 
 model Game {
-  id         String  @id @default(cuid())
-  slug       String  @unique
+  id         String       @id @default(cuid())
+  slug       String       @unique
   name       String
   type       String?
-  profilePic String? @map("profile_pic")
+  profilePic String?      @map("profile_pic")
   banner     String?
   Scrim      Scrim[]
+  Tournament Tournament[]
 
   @@map("games")
 }
@@ -90,25 +93,24 @@ enum ScrimStatus {
 }
 
 model Scrim {
-  id           String      @id @default(cuid())
-  slug         String      @unique
-  name         String
-  game         Game        @relation(fields: [gameId], references: [id])
-  space        Space       @relation(fields: [spaceId], references: [id])
-  admin        User        @relation(fields: [adminId], references: [id])
-  banner       String?
-  startDate    DateTime    @map("start_date")
-  endDate      DateTime    @map("end_date")
-  description  String      @db.Text
-  rules        String[]
-  teamSize     Int         @map("team_size")
-  prizePool    Int         @map("prize_pool")
-  entryFee     Int         @map("entry_fee")
-  slots        Int
-  status       ScrimStatus
-  createdAt    DateTime    @default(now()) @map("created_at")
-  updatedAt    DateTime    @updatedAt @map("updated_at")
-  matchesCount Int         @default(1) @map("matches_count")
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  game        Game        @relation(fields: [gameId], references: [id])
+  space       Space       @relation(fields: [spaceId], references: [id])
+  admin       User        @relation(fields: [adminId], references: [id])
+  banner      String?
+  startDate   DateTime    @map("start_date")
+  endDate     DateTime    @map("end_date")
+  description String      @db.Text
+  rules       String[]
+  teamSize    Int         @map("team_size")
+  prizePool   Int         @map("prize_pool")
+  entryFee    Int         @map("entry_fee")
+  slots       Int
+  status      ScrimStatus
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
 
   gameId  String @map("game_id")
   spaceId String @map("space_id")
@@ -241,4 +243,71 @@ model Announcement {
   @@index([senderId])
   @@index([contextType, contextId])
   @@map("announcements")
+}
+
+model Tournament {
+  id           String      @id @default(cuid())
+  slug         String      @unique
+  name         String
+  game         Game        @relation(fields: [gameId], references: [id])
+  space        Space       @relation(fields: [spaceId], references: [id])
+  admin        User        @relation(fields: [adminId], references: [id])
+  banner       String?
+  startDate    DateTime    @map("start_date")
+  endDate      DateTime    @map("end_date")
+  description  String      @db.Text
+  rules        String[]
+  teamSize     Int         @map("team_size")
+  prizePool    Int         @map("prize_pool")
+  entryFee     Int         @map("entry_fee")
+  slots        Int
+  status       ScrimStatus
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  matchesCount Int         @default(1) @map("matches_count")
+
+  gameId  String @map("game_id")
+  spaceId String @map("space_id")
+  adminId String @map("admin_id")
+
+  rounds TournamentRound[]
+
+  @@map("tournaments")
+}
+
+model TournamentRound {
+  id           String     @id @default(cuid())
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId String     @map("tournament_id")
+  round_number Int        @map("round_number")
+  round_name   String     @map("round_name")
+  created_at   DateTime   @default(now()) @map("created_at")
+
+  groups TournamentGroup[]
+
+  @@map("tournaemnt_rounds")
+}
+
+model TournamentGroup {
+  id           String @id @default(cuid())
+  group_number Int    @map("group_number")
+  round        TournamentRound  @relation(fields: [roundId], references: [id])
+  roundId      String @map("round_id")
+
+  tournament_matches TournamentMatch[]
+
+  @@map("tournament_groups")
+}
+
+model TournamentMatch {
+  id           String    @id @default(cuid())
+  group        TournamentGroup     @relation(fields: [groupId], references: [id])
+  groupId      String    @map("group_id")
+  match_number Int       @map("match_number")
+  start_date   DateTime? @map("start_date")
+  room_id      String?   @map("room_id")
+  password     String?
+  results      Json?     @db.Json
+
+  @@map("tournament_matches")
 }

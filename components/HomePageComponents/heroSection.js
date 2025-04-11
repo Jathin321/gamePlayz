@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function HeroSection() {
   return (
-    <div className="text-center lg:pt-64 md:pt-64 pt-32">
+    <div className="text-center lg:pt-64 md:pt-64 pt-32 h-screen">
       <h1 className="text-6xl md:text-7xl font-extrabold text-white mb-8">
         now{" "}
         <span className="relative">

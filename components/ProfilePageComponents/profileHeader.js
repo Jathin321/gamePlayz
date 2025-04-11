@@ -211,7 +211,7 @@ const ProfileHeader = ({
                           Top Game
                         </span>
                       </div>
-                      <p className="text-lg font-bold truncate">Free Fire</p>
+                      <p className="text-lg font-bold truncate">Volarant</p>
                     </div>
                   </div>
                 </div>
@@ -276,7 +276,7 @@ const ProfileHeader = ({
                         Top Game
                       </span>
                     </div>
-                    <p className="text-xl font-bold mt-1 truncate">Free Fire</p>
+                    <p className="text-xl font-bold mt-1 truncate">Volarant</p>
                   </div>
                 </div>
               </div>

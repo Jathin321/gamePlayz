@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from 'next/link';
+import TournamentCard from '../../components/TournamentComponents/tournamentCard';
 import {
   Search,
   Calendar,
@@ -14,9 +15,97 @@ import {
   Bell
 } from "lucide-react";
 
+// Sample tournament data
+const sampleTournaments = [
+  {
+    id: "winter-battle-season-12",
+    title: "Winter Battle Season 12",
+    game: "Pokémon UNITE",
+    image: "https://image1.challengermode.com/51206c37-089e-44ff-4a6a-08dd394ae91b_1280_720",
+    startDate: "2025-03-15T18:00:00Z",
+    teams: 32,
+    slotsLeft: 16,
+    prizePool: "$25,000",
+    status: "upcoming"
+  },
+  {
+    id: "valorant-champions-series",
+    title: "Valorant Champions Series",
+    game: "Valorant",
+    image: "https://image1.challengermode.com/b1f1c0c7-7978-4f09-5997-08db9ba7c4d2_1280_720",
+    startDate: "2025-02-10T15:00:00Z",
+    teams: 64,
+    slotsLeft: 0,
+    prizePool: "$50,000",
+    status: "live"
+  },
+  {
+    id: "apex-legends-championship",
+    title: "Apex Legends Championship",
+    game: "Apex Legends",
+    image: "https://image1.challengermode.com/1d815371-c0d9-42d2-5cca-08dbb78aefb0_1280_720",
+    startDate: "2025-04-05T19:00:00Z",
+    teams: 20,
+    slotsLeft: 8,
+    prizePool: "$15,000",
+    status: "upcoming"
+  },
+  {
+    id: "fortnite-masters-cup",
+    title: "Fortnite Masters Cup",
+    game: "Fortnite",
+    image: "https://image1.challengermode.com/3bc3a53b-fae7-4313-6ae3-08db7de11e08_1280_720",
+    startDate: "2025-02-25T20:00:00Z",
+    teams: 100,
+    slotsLeft: 42,
+    prizePool: "$30,000",
+    status: "live"
+  },
+  {
+    id: "pubg-mobile-showdown",
+    title: "PUBG Mobile Showdown",
+    game: "PUBG Mobile",
+    image: "https://image1.challengermode.com/0e2fb695-a938-4ad0-4796-08db8953162a_1280_720",
+    startDate: "2025-03-20T16:00:00Z",
+    teams: 25,
+    slotsLeft: 10,
+    prizePool: "$10,000",
+    status: "upcoming"
+  },
+  {
+    id: "free-fire-tournament",
+    title: "Free Fire Championship",
+    game: "Free Fire",
+    image: "https://image1.challengermode.com/2cfc6825-7e5a-4b18-6e56-08db79e5b2a7_1280_720",
+    startDate: "2025-02-05T17:30:00Z",
+    teams: 12,
+    slotsLeft: 0,
+    prizePool: "$8,000",
+    status: "live"
+  },
+  {
+    id: "cod-mobile-masters",
+    title: "CoD Mobile Masters",
+    game: "Call of Duty Mobile",
+    image: "https://image1.challengermode.com/8f914f6c-ac16-4e0a-397a-08da11ccf394_1280_720",
+    startDate: "2024-12-10T18:00:00Z",
+    teams: 32,
+    slotsLeft: 0,
+    prizePool: "$20,000",
+    status: "past"
+  }
+];
+
 function Tournaments() {
   const [activeTab, setActiveTab] = useState("live");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter tournaments based on active tab
+  const filteredTournaments = sampleTournaments.filter(tournament => 
+    tournament.status === activeTab || 
+    (activeTab === "upcoming" && tournament.status === "upcoming") ||
+    (activeTab === "past" && tournament.status === "past")
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
@@ -35,7 +124,6 @@ function Tournaments() {
               placeholder="Search tournaments by name, game, or organizer..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              disabled
             />
           </div>
 
@@ -67,7 +155,6 @@ function Tournaments() {
                       ? "bg-purple-600 text-white"
                       : "text-gray-200 hover:text-white hover:bg-gray-700/50"
                   }`}
-                  disabled
                 >
                   {tab.icon}
                   <span>{tab.label}</span>
@@ -77,61 +164,63 @@ function Tournaments() {
           </div>
         </div>
 
-        {/* Coming Soon Message */}
-        <div className="flex flex-col items-center justify-center py-6">
-          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-8 max-w-2xl mx-auto text-center border border-gray-700/50">
-            <div className="bg-purple-500/10 rounded-full p-4 inline-block mb-6">
-              <Trophy className="h-12 w-12 text-purple-400" />
-            </div>
-            
-            <h2 className="text-3xl font-bold text-white mb-4">Tournaments Coming Soon</h2>
-            
+        {/* Tournament Grid */}
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold text-white mb-6">
+            {activeTab === "live" ? "Live Tournaments" : 
+             activeTab === "upcoming" ? "Upcoming Tournaments" : 
+             "Past Tournaments"}
+          </h2>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredTournaments.length > 0 ? (
+              filteredTournaments.map(tournament => (
+                <div key={tournament.id} className="tournament-card-wrapper">
+                  <Link href={`/tournaments/${tournament.id}`}>
+                    <div className="cursor-pointer">
+                      <TournamentCard 
+                        title={tournament.title}
+                        image={tournament.image}
+                        date={new Date(tournament.startDate).toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          timeZoneName: 'short'
+                        })}
+                        teams={tournament.teams}
+                        slotsLeft={tournament.slotsLeft}
+                        prizePool={tournament.prizePool}
+                        game={tournament.game}
+                      />
+                    </div>
+                  </Link>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-10">
+                <p className="text-gray-400 text-lg">No tournaments found for this category.</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Create Tournament CTA */}
+        <div className="mt-16 text-center">
+          <div className="bg-gray-800/40 backdrop-blur-sm rounded-xl p-8 max-w-2xl mx-auto border border-gray-700/50">
+            <h3 className="text-2xl font-bold text-white mb-4">Want to host your own tournament?</h3>
             <p className="text-gray-300 mb-6">
-              We're working hard to bring you competitive gaming tournaments. 
-              Soon you'll be able to join tournaments, compete with players around the 
-              world, and win exciting prizes!
+              Create and manage your own tournaments, customize rules, and invite players to compete.
             </p>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-              <div className="bg-gray-700/30 p-4 rounded-lg">
-                <Calendar className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-                <h3 className="font-semibold text-white">Regular Events</h3>
-                <p className="text-sm text-gray-300">Weekly and monthly tournaments</p>
-              </div>
-              
-              <div className="bg-gray-700/30 p-4 rounded-lg">
-                <Users2 className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-                <h3 className="font-semibold text-white">Team & Solo</h3>
-                <p className="text-sm text-gray-300">Compete individually or with your team</p>
-              </div>
-              
-              <div className="bg-gray-700/30 p-4 rounded-lg">
-                <Trophy className="h-6 w-6 text-purple-400 mx-auto mb-2" />
-                <h3 className="font-semibold text-white">Prize Pools</h3>
-                <p className="text-sm text-gray-300">Win rewards and recognition</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center justify-center flex-col gap-2">
-              <button className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white rounded-full px-5 py-2 transition-colors">
-                <Bell className="h-4 w-4" />
-                <span>Notify me when tournaments launch</span>
-              </button>
-              
-              <p className="text-sm text-gray-400 mt-6">
-                <AlertTriangle className="h-4 w-4 inline mr-1" />
-                Want to practice with other teams while you wait?
-              </p>
-              
-              <Link 
-                href="/scrims" 
-                className="mt-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-8 py-3 rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-purple-500/20"
-              >
-                <Swords className="h-5 w-5" />
-                <span>Check out Scrims</span>
-                <ArrowRight className="h-5 w-5" />
-              </Link>
-            </div>
+            <Link 
+              href="/spaces" 
+              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white px-8 py-3 rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-purple-500/20 mx-auto w-fit"
+            >
+              <Trophy className="h-5 w-5" />
+              <span>Create a Tournament</span>
+              <ArrowRight className="h-5 w-5" />
+            </Link>
           </div>
         </div>
       </div>
