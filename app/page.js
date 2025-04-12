@@ -3,9 +3,12 @@ import Link from "next/link";
 import { Trophy, Gamepad, Users, Star, ArrowRight, ChevronRight, Zap, Calendar, Award, Globe } from "lucide-react";
 import HeroSection from "@/components/HomePageComponents/heroSection";
 import GamesSection from "@/components/HomePageComponents/gamesSection";
+import { Suspense } from "react";
+
 
 export default function Home() {
   return (
+    <Suspense fallback={<div>Loading...</div>}>
     <div className="">
       <Header />
       <HeroSection/>
@@ -106,5 +109,5 @@ export default function Home() {
         </div>
       </section>
     </div>
-  );
+    </Suspense>);
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { resetPassword } from "@/actions/prismaActions";
@@ -15,10 +15,10 @@ export default function VerifyResetPassword() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isResetComplete, setIsResetComplete] = useState(false); // New state for tracking completion
-  
+
   const router = useRouter();
   const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get("token");
 
   useEffect(() => {
     async function verifyToken() {
@@ -34,7 +34,7 @@ export default function VerifyResetPassword() {
         // Verify the token with Supabase
         const { error } = await supabase.auth.verifyOtp({
           token_hash: token,
-          type: 'recovery'
+          type: "recovery",
         });
 
         if (error) {
@@ -81,16 +81,18 @@ export default function VerifyResetPassword() {
     try {
       // Update the password directly with Supabase using the token
       const { error } = await supabase.auth.updateUser({
-        password: newPassword
+        password: newPassword,
       });
-      
+
       if (error) {
         console.error("Password reset error:", error);
-        setError(error.message || "Failed to reset password. Please try again.");
+        setError(
+          error.message || "Failed to reset password. Please try again."
+        );
       } else {
         setSuccess("Password reset successfully!");
         setIsResetComplete(true); // Mark reset as complete
-        
+
         // Sign out any existing session
         await supabase.auth.signOut();
       }
@@ -103,7 +105,7 @@ export default function VerifyResetPassword() {
   };
 
   const navigateToLogin = () => {
-    router.push('/login');
+    router.push("/login");
   };
 
   // Show loading state
@@ -128,10 +130,11 @@ export default function VerifyResetPassword() {
           <p className={classes.title}>Reset Password</p>
           <div className="p-6 text-center">
             <div className="text-red-500 mb-4">{error}</div>
-            <p className="mb-4">
-              Please request a new password reset link.
-            </p>
-            <Link href="/resetPassword" className="text-purple-400 hover:text-purple-300">
+            <p className="mb-4">Please request a new password reset link.</p>
+            <Link
+              href="/resetPassword"
+              className="text-purple-400 hover:text-purple-300"
+            >
               Request a new password reset
             </Link>
           </div>
@@ -149,9 +152,10 @@ export default function VerifyResetPassword() {
           <div className="p-6 text-center">
             <div className="text-green-500 text-xl mb-6">✓ {success}</div>
             <p className="mb-4">
-              Your password has been successfully updated. You can now log in with your new password.
+              Your password has been successfully updated. You can now log in
+              with your new password.
             </p>
-            <button 
+            <button
               onClick={navigateToLogin}
               className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300"
             >
@@ -165,59 +169,78 @@ export default function VerifyResetPassword() {
 
   // Show password reset form after successful verification
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className={classes.formContainer}>
-        <p className={classes.title}>Reset Password</p>
-        
-        <form className={classes.form} onSubmit={handlePasswordReset}>
-          <div className={classes.inputGroup}>
-            <label htmlFor="newPassword">New Password</label>
-            <input
-              type="password"
-              name="newPassword"
-              id="newPassword"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-              minLength={6}
-            />
+    <Suspense fallback={<div className="text-center p-10">Loading...</div>}>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className={classes.formContainer}>
+          <p className={classes.title}>Reset Password</p>
+
+          <form className={classes.form} onSubmit={handlePasswordReset}>
+            <div className={classes.inputGroup}>
+              <label htmlFor="newPassword">New Password</label>
+              <input
+                type="password"
+                name="newPassword"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                required
+                minLength={6}
+              />
+            </div>
+
+            <div className={classes.inputGroup}>
+              <label htmlFor="confirmPassword">Confirm Password</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            {error && <div className="m-[14px] text-red-500">{error}</div>}
+
+            <button className={classes.sign} type="submit" disabled={loading}>
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <svg
+                    className="animate-spin h-5 w-5 mr-3 text-white"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-50"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                    ></path>
+                  </svg>
+                  Updating...
+                </div>
+              ) : (
+                "Reset Password"
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <Link
+              href="/login"
+              className="text-purple-400 hover:text-purple-300"
+            >
+              Back to Login
+            </Link>
           </div>
-          
-          <div className={classes.inputGroup}>
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              id="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
-          
-          {error && <div className="m-[14px] text-red-500">{error}</div>}
-          
-          <button className={classes.sign} type="submit" disabled={loading}>
-            {loading ? (
-              <div className="flex items-center justify-center">
-                <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
-                  <circle className="opacity-50" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-                Updating...
-              </div>
-            ) : (
-              "Reset Password"
-            )}
-          </button>
-        </form>
-        
-        <div className="mt-6 text-center">
-          <Link href="/login" className="text-purple-400 hover:text-purple-300">
-            Back to Login
-          </Link>
         </div>
       </div>
-    </div>
+    </Suspense>
   );
 }

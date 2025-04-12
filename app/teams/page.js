@@ -15,7 +15,7 @@ import {
   SlidersHorizontal,
   Check,
   ArrowDownAZ,
-  GameController,
+  Gamepad2,
   TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
@@ -513,7 +513,7 @@ const Teams = () => {
                           key={game}
                           className="bg-gray-700/50 text-xs px-2 py-1 rounded-full flex items-center text-gray-300"
                         >
-                          <GameController className="w-3 h-3 mr-1 text-purple-400" />
+                          <Gamepad2 className="w-3 h-3 mr-1 text-purple-400" />
                           {game}
                         </span>
                       ))}

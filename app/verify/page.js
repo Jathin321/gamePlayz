@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { redirect, useSearchParams } from "next/navigation";
 import { supabase } from "@/util/supabase";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
@@ -104,33 +104,37 @@ export default function VerifyAccount() {
   }, [searchParams]);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-transparent p-4">
-      {status === "verifying" ? (
-        <div className="flex flex-col items-center space-y-4">
-          <Loader2 className="h-12 w-12 animate-spin text-white-500" />
-          <p className="text-lg text-white">Verifying your account...</p>
-        </div>
-      ) : status === "success" ? (
-        <div className="flex flex-col items-center justify-center min-h-screen p-6">
-          <div className="flex flex-col items-center space-y-4 bg-purple-800 rounded-lg p-8 shadow-lg">
-            <CheckCircle2 className="h-24 w-24 text-white" />
-            <p className="text-2xl font-semibold text-white text-center">
-              Account verified successfully!
-            </p>
-            <Link
-              href="/login"
-              className="mt-6 px-6 py-3 bg-white text-violet-700 rounded-lg font-semibold hover:bg-violet-100 transition duration-300"
-            >
-              Login Now
-            </Link>
+    <Suspense
+      fallback={<div className="text-center p-10">Verifying token...</div>}
+    >
+      <div className="flex flex-col items-center justify-center min-h-screen bg-transparent p-4">
+        {status === "verifying" ? (
+          <div className="flex flex-col items-center space-y-4">
+            <Loader2 className="h-12 w-12 animate-spin text-white-500" />
+            <p className="text-lg text-white">Verifying your account...</p>
           </div>
-        </div>
-      ) : (
-        <div className="flex flex-col items-center space-y-4">
-          <XCircle className="h-12 w-12 text-red-500" />
-          <p className="text-lg">❌ {errorMessage}</p>
-        </div>
-      )}
-    </div>
+        ) : status === "success" ? (
+          <div className="flex flex-col items-center justify-center min-h-screen p-6">
+            <div className="flex flex-col items-center space-y-4 bg-purple-800 rounded-lg p-8 shadow-lg">
+              <CheckCircle2 className="h-24 w-24 text-white" />
+              <p className="text-2xl font-semibold text-white text-center">
+                Account verified successfully!
+              </p>
+              <Link
+                href="/login"
+                className="mt-6 px-6 py-3 bg-white text-violet-700 rounded-lg font-semibold hover:bg-violet-100 transition duration-300"
+              >
+                Login Now
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center space-y-4">
+            <XCircle className="h-12 w-12 text-red-500" />
+            <p className="text-lg">❌ {errorMessage}</p>
+          </div>
+        )}
+      </div>
+    </Suspense>
   );
 }
