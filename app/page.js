@@ -8,7 +8,7 @@ import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    
     <div className="">
       <Header />
       <HeroSection/>
@@ -109,5 +109,5 @@ export default function Home() {
         </div>
       </section>
     </div>
-    </Suspense>);
+    );
 }
