@@ -1,36 +1,115 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# GamePlayz
 
-## Getting Started
+GamePlayz is a modern web platform designed to manage, organize, and participate in esports tournaments. It serves as a bridge between esports tournament organizers and players, making it easy for organizers to host events and for players to discover, join, and compete in tournaments across various games.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 🚀 Project Description
+
+GamePlayz is built to streamline the esports ecosystem by providing a centralized hub for:
+
+- **Tournament Organizers:** Effortlessly create, manage, and promote esports tournaments. Customize rules, track registrations, manage brackets, and communicate with participants.
+- **Players:** Discover upcoming and live tournaments, register as individuals or teams, track your stats and achievements, and connect with the esports community.
+- **Community:** GamePlayz acts as a middleman, connecting players and organizers, ensuring smooth operations, fair play, and a vibrant competitive environment.
+
+---
+
+## 🗂️ Project Structure
+
+The project uses [Next.js](https://nextjs.org) (App Router) and is organized as follows:
+
+```
+gameplayz/
+│
+├── app/                        # Main Next.js app directory (routes, pages, layouts)
+│   ├── tournaments/            # Tournament listing, details, creation, etc.
+│   ├── profile/                # User profile pages and stats
+│   ├── spaces/                 # Community spaces or teams
+│   ├── settings/               # User dashboard settings
+│   ├── verify/                 # Email/account verification
+│   ├── ...                     # Other feature routes
+│   └── page.js                 # Home page
+│
+├── components/                 # Reusable React components
+│   ├── TournamentComponents/   # Tournament cards, lists, etc.
+│   ├── ProfilePageComponents/  # Profile stats, charts, etc.
+│   └── ...                     # Other UI components
+│
+├── actions/                    # Server actions (e.g., database queries, auth)
+│   └── prismaActions.js
+│
+├── util/                       # Utility files (e.g., Prisma client, Supabase, helpers)
+│   ├── prismaClient.js
+│   └── supabase.js
+│
+├── prisma/                     # Prisma schema and migrations
+│   └── schema.prisma
+│
+├── public/                     # Static assets (images, icons, etc.)
+│
+├── styles/                     # Global and component styles
+│
+├── package.json
+├── README.md
+└── ...
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🏆 Key Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Tournament Management:** Create, edit, and manage esports tournaments with customizable settings.
+- **Player Registration:** Players can join tournaments as individuals or as part of a team.
+- **Profile & Stats:** Track your performance, achievements, and match history.
+- **Spaces & Teams:** Join or create teams/spaces for better collaboration and communication.
+- **Settings:** Personalize your experience with theme, language, and notification preferences.
+- **Authentication & Verification:** Secure sign-up, login, and email verification.
+- **Charts & Visualizations:** Insightful graphs for player stats and tournament analytics.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Getting Started
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Set up your environment:**
+   - Configure your database connection in `.env`
+   - Run Prisma migrations:
+     ```bash
+     npx prisma migrate dev
+     npx prisma generate
+     ```
 
-## Deploy on Vercel
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📁 Learn More
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Prisma ORM](https://www.prisma.io/docs/)
+- [React.js](https://react.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+
+---
+
+## 📣 Contributing
+
+Feedback and contributions are welcome! Please open an issue or submit a pull request.
+
+---
+
+## 📦 Deployment
+
+The easiest way to deploy your Next.js app is with [Vercel](https://vercel.com/).
+
+---
+
+**GamePlayz** – Empowering esports communities, one tournament at a time!
