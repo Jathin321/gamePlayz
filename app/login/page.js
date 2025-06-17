@@ -1,24 +1,85 @@
+'use client';
+import { useState } from 'react';
+import { login } from '@/actions/auth';
 import Link from 'next/link';
-import classes from './style.module.css'
-const Login = () => {
+import classes from './style.module.css';
+import { useRouter } from 'next/navigation';
+
+function Login () {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const router = useRouter();
+
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    // Validation
+    if (!email || !password) {
+      setError("Both email and password are required.");
+      setLoading(false);
+      return;
+    }
+
+    // Simple email format validation (you can refine it further)
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailPattern.test(email)) {
+      setError("Please enter a valid email address.");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError(""); // Clear any previous error
+
+    const response = await login(email, password);
+
+    if (response?.error) {
+      setError(response?.error);
+      setLoading(false);
+      return { error: response.error };
+    } else {
+      // Handle successful login (e.g., redirect, show user info, etc.)
+      console.log("Login successful:", response.user);
+      setLoading(false);
+      router.push('/');
+    }
+  };
+
   return (
     <div className='flex items-center justify-center min-h-screen '>
       <div className={classes.formContainer}>
         <p className={classes.title}>Login</p>
-        <form className={classes.form}>
+
+        <form className={classes.form} onSubmit={handleLogin}>
           <div className={classes.inputGroup}>
-            <label htmlFor="username">Username</label>
-            <input type="text" name="username" id="username" />
+            <label htmlFor="username">Email</label>
+            <input type="text" name="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div className={classes.inputGroup}>
             <label htmlFor="password">Password</label>
-            <input type="password" name="password" id="password" />
+            <input type="password" name="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             <div className={classes.forgot}>
-              <a rel="noopener noreferrer" href="#">Forgot Password ?</a>
+              <Link href="resetPassword" rel="noopener noreferrer">Forgot Password ?</Link>
             </div>
           </div>
-          <button className={classes.sign}>Log in</button>
+          {error && <div className='m-[14px] text-red-500'>{error}</div>}
+          <button className={classes.sign} type='submit' disabled={loading}>
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <svg className="animate-spin h-5 w-5 mr-3 text-white" viewBox="0 0 24 24">
+                  <circle className="opacity-50" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Loading...
+              </div>
+            ) : (
+              "Log in"
+            )}
+          </button>
         </form>
+
         <div className={classes.socialmessage}>
           <div className={classes.line} />
           <p className={classes.message}>Login with social accounts</p>

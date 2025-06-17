@@ -1,0 +1,153 @@
+import { useState, useEffect } from 'react';
+import { Search, MoreVertical, Users, Shield, Award, Loader2 } from 'lucide-react';
+import { getScrimRegistrations } from '@/actions/prismaActions';
+import Link from 'next/link';
+
+export default function RegisteredTeams({ scrim }) {
+  const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const fetchRegisteredTeams = async () => {
+      setLoading(true);
+      const { success, registrations, error } = await getScrimRegistrations(scrim.id);
+      if (success) {
+        setTeams(registrations.map(reg => reg.team));
+      } else {
+        setError(error);
+      }
+      setLoading(false);
+    };
+
+    fetchRegisteredTeams();
+  }, [scrim.id]);
+
+  const filteredTeams = teams.filter(team => 
+    team.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (error) {
+    return (
+      <div className="bg-gradient-to-b from-gray-900 to-black p-6 rounded-lg text-center">
+        <div className="text-red-400 mb-4">Error loading teams: {error}</div>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-gradient-to-b from-gray-900 to-black min-h-[80vh] p-6 rounded-lg">
+      <div className="container mx-auto max-w-4xl">
+        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+          <Users className="mr-2" /> Registered Teams
+          <span className="ml-2 bg-purple-600 text-white text-sm px-2 py-1 rounded-full">
+            {teams.length}/{scrim.slots}
+          </span>
+        </h2>
+        
+        {/* Search Bar */}
+        <div className="mb-8 relative">
+          <input
+            type="text"
+            className="w-full p-3 pl-12 bg-gray-800 text-white rounded-lg outline-none focus:ring-2 focus:ring-purple-500 border border-gray-700"
+            placeholder="Search teams..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Search className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
+        </div>
+
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 className="w-10 h-10 text-purple-500 animate-spin" />
+            <span className="ml-3 text-white">Loading teams...</span>
+          </div>
+        ) : (
+          <>
+            {/* Confirmed Teams Section */}
+            {filteredTeams.length > 0 ? (
+              <div>
+                <div className="mb-6 border-b border-gray-800 pb-3">
+                  <h3 className="text-white text-lg font-semibold flex items-center">
+                    <Shield className="mr-2 text-purple-500" /> Confirmed Teams
+                  </h3>
+                  <p className="text-gray-400 text-sm">
+                    These teams are participating in the scrim.
+                  </p>
+                </div>
+
+                {/* Team List */}
+                <ul className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {filteredTeams.map((team) => (
+                    <Link 
+                      href={`/teams/${team.slug || team.id}`} 
+                      key={team.id}
+                    >
+                      <li className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 hover:border-purple-500 hover:transform hover:scale-[1.02] transition-all duration-200 cursor-pointer group">
+                        <div className="flex items-center p-4">
+                          <img
+                            src={team.profilePic || "https://via.placeholder.com/60"}
+                            alt={team.name}
+                            className="rounded-full w-14 h-14 object-cover border-2 border-purple-500 mr-4"
+                          />
+                          <div className="flex-1">
+                            <h4 className="text-white font-semibold text-lg group-hover:text-purple-400 transition-colors">
+                              {team.name}
+                            </h4>
+                            <div className="flex items-center text-sm text-gray-400 mt-1">
+                              <Users className="w-4 h-4 mr-1" />
+                              <span>{team.members?.length || 4} Members</span>
+                              
+                              {team.region && (
+                                <span className="ml-4 bg-gray-700 px-2 py-0.5 rounded text-xs">
+                                  {team.region}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-gray-400 group-hover:text-purple-400 transition-colors">
+                            <Award className="w-5 h-5" />
+                          </div>
+                        </div>
+                      </li>
+                    </Link>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 bg-gray-800/30 rounded-lg">
+                <Users className="w-16 h-16 text-gray-600 mb-4" />
+                <h3 className="text-xl font-semibold text-white mb-2">No Teams Found</h3>
+                {searchTerm ? (
+                  <p className="text-gray-400 text-center max-w-md">
+                    No teams match your search criteria. Try a different search term.
+                  </p>
+                ) : (
+                  <p className="text-gray-400 text-center max-w-md">
+                    No teams have registered for this scrim yet. Check back later.
+                  </p>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// const teams = [
+//   { id: 1, name: "Ultra legends", icon: "https://via.placeholder.com/40" },
+//   { id: 2, name: "TeamGC", icon: "https://via.placeholder.com/40" },
+//   { id: 3, name: "FOAxNARIKOOTAM", icon: "https://via.placeholder.com/40" },
+//   { id: 4, name: "Team Alpha", icon: "https://via.placeholder.com/40" },
+//   { id: 5, name: "Team Beta", icon: "https://via.placeholder.com/40" },
+//   { id: 6, name: "Team Gamma", icon: "https://via.placeholder.com/40" },
+// ];

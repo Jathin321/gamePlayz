@@ -1,0 +1,99 @@
+/* Base button styling */
+.btn {
+    background-color: transparent;
+    color: inherit;
+    border: none;
+    outline: none;
+    /* transition: box-shadow 0.3s ease, color 0.3s ease; */
+}
+
+
+.banner {
+    /* height: 250px; Adjust height */
+    background: url('https://png.pngtree.com/thumb_back/fh260/background/20210501/pngtree-cool-blue-puple-and-gray-crystal-background-image_697368.jpg') no-repeat center center;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+    overflow: hidden;
+  }
+
+  .banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 250px; /* Adjust fade height */
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgb(23,28,38,15) 100%);
+    pointer-events: none;
+  }
+
+  .banner .icon {
+    position: absolute;
+    top: 10px; /* Distance from the top */
+    left: 10px; /* Distance from the left */
+    z-index: 1; /* Ensure it's above other elements */
+    cursor: pointer;
+    fill: white; /* Icon color */
+  }
+
+  .banner .share-icon {
+    position: absolute;
+    top: 10px; /* Distance from the top */
+    right: 10px; /* Distance from the left */
+    z-index: 1; /* Ensure it's above other elements */
+    cursor: pointer;
+    fill: white; /* Icon color */
+  }
+
+
+/* Styling for active button */
+.customActiveButton {
+    position: relative;
+}
+
+.customActiveButton::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0px;
+    /* Thickness of the underline */
+    background-color: red;
+    /* Red underline */
+}
+/* Block hover effect completely */
+.customNoHover:hover {
+    box-shadow: none !important;
+    background-color: transparent !important;
+    color: inherit !important;
+    cursor: default;
+    /* Optional: disable pointer cursor */
+}
+
+.underlineActive {
+    position: relative;
+}
+
+.underlineActive::after {
+content: "";
+    position: absolute;
+    top: 100%;
+    /* Position below the button */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    /* Top width of the trapezium */
+    height: 0;
+    border-left: 10px solid transparent;
+    /* Left side angle */
+    border-right: 10px solid transparent;
+    /* Right side angle */
+    border-bottom: 6px solid #A78BFA;
+    /* Color and height of the reversed trapezium */
+}

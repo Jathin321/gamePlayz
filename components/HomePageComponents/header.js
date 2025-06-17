@@ -1,8 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import OpenOptions from "./OpenOptions";
+import UserMenu from "./desktopUserMenu";
+import { getAuthToken } from "@/actions/auth";
 
-const Header = () => {
+async function Header() {
+
+  const token = await getAuthToken();
 
   return (
     <nav className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 border-b border-gray-200 dark:border-gray-600">
@@ -21,16 +25,21 @@ const Header = () => {
             </span>
           </div>
         </Link>
-        <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
-          <Link href="login" 
-            className="text-white hover:bg-[#A78BFA] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-purple-900 dark:hover:bg-[#A78BFA]-700 dark:focus:ring-black"
-          >
-            Log In
-          </Link>
-        </div>
 
-        <OpenOptions/>
-        
+        {/* Login/Logout/Profile */}
+        <div className="flex md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
+          {token ? (
+            <UserMenu /> // If the user is logged in, show UserMenu
+          ) : (
+            <Link
+              href="/login"
+              className="text-white hover:bg-[#A78BFA] focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-purple-900 dark:hover:bg-[#A78BFA]-700 dark:focus:ring-black"
+            >
+              Log In
+            </Link> // Otherwise, show login button
+          )}
+        </div>
+        <OpenOptions />
       </div>
     </nav>
   );
